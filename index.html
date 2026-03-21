@@ -21,7 +21,8 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 
 /* 대문 */
 .splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:40px 24px 60px;background:#000;overflow:hidden;cursor:pointer}
-.splash-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.85) 100%),url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80') center/cover}
+.splash-bg{position:absolute;inset:0;background:#000}
+.splash-ill{position:absolute;inset:0;background:url('splash.png') center/contain no-repeat;opacity:.4}
 .splash *{position:relative;z-index:1}
 .splash h1{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;text-align:center;line-height:1.1}
 .splash p{font-size:15px;color:rgba(255,255,255,.7);margin:10px 0 0;text-align:center}
@@ -194,6 +195,7 @@ function render(){
 function rSplash(){
   return`<div class="splash fade-in" id="splashArea">
   <div class="splash-bg"></div>
+  <div class="splash-ill"></div>
   <h1>${S.lang==='ko'?'부산을':'Run'}<br>${S.lang==='ko'?'달리다':'Busan'}</h1>
   <p>${t('splashSub')}</p>
   <div class="splash-hint">${t('splashHint')}</div>
