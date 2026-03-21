@@ -22,15 +22,17 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 /* 대문 */
 .splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:40px 24px 60px;background:#000;overflow:hidden;cursor:pointer}
 .splash-bg{position:absolute;inset:0;background:#000}
-.splash-ill{position:absolute;inset:0;background:url('splash.png') center/contain no-repeat;opacity:.4}
+.splash-ill{position:absolute;inset:0;background:url('https://raw.githubusercontent.com/actiongamyoun/busan-running/main/splash.png') center center/cover no-repeat;opacity:.45}
 .splash *{position:relative;z-index:1}
 .splash h1{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;text-align:center;line-height:1.1}
 .splash p{font-size:15px;color:rgba(255,255,255,.7);margin:10px 0 0;text-align:center}
 .splash-hint{margin-top:32px;font-size:13px;color:rgba(255,255,255,.35);animation:fadeIn 1.5s ease 1s both}
-  
+.splash-users{position:absolute;top:20px;right:20px;background:rgba(255,255,255,.15);backdrop-filter:blur(10px);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.8);font-weight:600;z-index:2}
+
 /* 닉네임 팝업 */
 .nick-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:flex-end;justify-content:center}
 .nick-popup{background:#fff;border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:400px;animation:slideUp .3s ease both}
+.nick-err{color:#ef4444;font-size:12px;font-weight:600;margin-top:6px;text-align:center;min-height:18px}
 
 /* 탭바 */
 .tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid #f0f0f0;display:flex;z-index:100;padding:4px 0 env(safe-area-inset-bottom,6px)}
@@ -67,6 +69,10 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .gps-stat{text-align:center;flex:1}
 .gps-stat .val{font-size:26px;font-weight:900;color:var(--g1)}
 .gps-stat .lbl{font-size:9px;color:var(--sub);margin-top:2px}
+/* 접속자 배너 */
+.online-bar{display:flex;align-items:center;gap:6px;padding:8px 14px;font-size:11px;color:var(--sub);font-weight:600}
+.online-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
 </head>
 <body>
@@ -92,9 +98,11 @@ recTitle:'추천코스',writeRec:'코스 등록',recName:'코스 이름',recDesc
 recDist:'거리(km)',recDiff:'난이도',recMapGuide:'지도를 탭하여 출발점 지정',
 easy:'쉬움',med:'보통',hard:'어려움',cancel:'취소',create:'만들기',
 noRec:'아직 추천코스가 없어요',firstRec:'첫 번째 코스를 등록해보세요!',
-splash1:'부산러너',splashSub:'신호 없이, 끊김 없이 달리자',splashHint:'화면을 터치하세요',
-nickTitle:'닉네임을 알려주세요',nickPH:'예: 해운대러너',enter:'시작하기',
+splashSub:'신호 없이, 끊김 없이 달리자',splashHint:'화면을 터치하세요',
+nickTitle:'러너 이름을 알려주세요',nickPH:'예: 해운대러너',enter:'시작하기',
+nickDup:'이미 사용 중인 이름이에요!',nickChecking:'확인 중...',
 langSw:'EN',sigG:'신호없는',sigY:'보통',sigR:'신호있는',
+online:'명 접속 중',runners:'러너',
 },en:{
 app:'Busan Runner',sub:'Best running courses in Busan',
 noSigOnly:'Signal-free only',
@@ -110,9 +118,11 @@ recTitle:'Picks',writeRec:'Add Course',recName:'Name',recDesc:'Description',
 recDist:'Dist(km)',recDiff:'Difficulty',recMapGuide:'Tap to set start',
 easy:'Easy',med:'Medium',hard:'Hard',cancel:'Cancel',create:'Create',
 noRec:'No picks yet',firstRec:'Share your first!',
-splash1:'Busan Runner',splashSub:'No signals, no stops',splashHint:'Tap to start',
-nickTitle:'What\'s your name?',nickPH:'e.g. RunnerKim',enter:'Let\'s go',
+splashSub:'No signals, no stops',splashHint:'Tap to start',
+nickTitle:'What\'s your runner name?',nickPH:'e.g. RunnerKim',enter:'Let\'s go',
+nickDup:'This name is already taken!',nickChecking:'Checking...',
 langSw:'KR',sigG:'Signal-free',sigY:'Some',sigR:'Signals',
+online:' online',runners:'runners',
 }};
 
 let S={
@@ -124,6 +134,7 @@ noSigFilter:false,selectedCourse:null,selectedType:null,
 showAllCmt:false,showSplash:true,showNickPopup:false,
 gpsState:'idle',gpsWatch:null,gpsCoords:[],gpsDist:0,gpsElapsed:0,gpsTimer:null,
 modal:null,recFormLat:35.15,recFormLng:129.06,
+totalUsers:0,nickError:'',
 };
 
 const $=id=>document.getElementById(id);
@@ -143,9 +154,7 @@ const DM={easy:{ko:'쉬움',en:'Easy',c:'#10b981'},medium:{ko:'보통',en:'Mediu
 function cdf(c){const d=DM[c.difficulty]||DM.easy;return S.lang==='ko'?d.ko:d.en}
 const TM={no_signal:{ko:'신호없는',en:'Signal-free'},scenic:{ko:'경치',en:'Scenic'},quiet:{ko:'조용',en:'Quiet'},beach:{ko:'해변',en:'Beach'},trail:{ko:'트레일',en:'Trail'},urban:{ko:'도심',en:'Urban'},night:{ko:'야경',en:'Night'},nature:{ko:'자연',en:'Nature'}};
 function tl(tg){const m=TM[tg];return m?(S.lang==='ko'?m.ko:m.en):tg}
-// 신호등: 초록(신호없는), 노랑(일부), 빨강(신호많은)
 function sigClass(c){if(c.no_signal)return'sig-green';const tags=c.tags||[];if(tags.includes('night')||tags.includes('urban'))return'sig-red';return'sig-yellow'}
-function sigLabel(c){if(c.no_signal)return t('sigG');if(sigClass(c)==='sig-red')return t('sigR');return t('sigY')}
 
 async function api(action,params={}){try{const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...params})});return await r.json()}catch{return null}}
 function gLk(id){return Object.keys(S.likes).filter(k=>k.startsWith(id+':')).length}
@@ -191,11 +200,12 @@ function render(){
   if(S.modal==='writeRec')initRecFormMap();
 }
 
-// --- 대문 (심플 일러스트) ---
-function rSplash(){
-  return`<div class="splash fade-in" id="splashArea">
+// --- 대문 ---
+function rSplash(){return`
+<div class="splash fade-in" id="splashArea">
   <div class="splash-bg"></div>
   <div class="splash-ill"></div>
+  ${S.totalUsers?`<div class="splash-users">🏃 ${S.totalUsers}${t('online')}</div>`:''}
   <h1>${S.lang==='ko'?'부산을':'Run'}<br>${S.lang==='ko'?'달리다':'Busan'}</h1>
   <p>${t('splashSub')}</p>
   <div class="splash-hint">${t('splashHint')}</div>
@@ -205,11 +215,12 @@ function rNickPopup(){return`
 <div class="nick-overlay" id="nickOverlay">
   <div class="nick-popup">
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:36px;margin-bottom:6px">🏃</div>
-      <h2 style="font-size:20px;font-weight:900;color:#1a1a1a">${t('nickTitle')}</h2>
+      <div style="font-size:40px;margin-bottom:6px">🏃</div>
+      <h2 style="font-size:22px;font-weight:900;color:#1a1a1a">${t('nickTitle')}</h2>
     </div>
-    <input id="nickIn" maxlength="12" placeholder="${t('nickPH')}" class="inp" style="text-align:center;font-size:18px;padding:14px;border-radius:16px">
-    <button id="nickGo" style="width:100%;margin-top:14px;padding:14px;border-radius:50px;background:linear-gradient(135deg,var(--g1),#1b5e20);color:#fff;font-size:16px;font-weight:800">${t('enter')}</button>
+    <input id="nickIn" maxlength="12" placeholder="${t('nickPH')}" class="inp" style="text-align:center;font-size:20px;padding:16px;border-radius:16px;font-weight:700">
+    <div class="nick-err" id="nickErr">${S.nickError}</div>
+    <button id="nickGo" style="width:100%;margin-top:10px;padding:16px;border-radius:50px;background:linear-gradient(135deg,var(--g1),#1b5e20);color:#fff;font-size:18px;font-weight:800">${t('enter')}</button>
     <button id="langB" style="display:block;margin:12px auto 0;padding:4px 14px;border-radius:12px;background:#f3f4f6;font-size:11px;font-weight:600;color:#374151">${t('langSw')}</button>
   </div>
 </div>`}
@@ -217,21 +228,35 @@ function rNickPopup(){return`
 function bSplash(){
   const sa=$('splashArea');if(sa)sa.onclick=()=>{if(S.nickname){S.showSplash=false;render();ensureProfile().then(()=>loadFromServer())}else if(!S.showNickPopup){S.showNickPopup=true;render()}};
   const lb=$('langB');if(lb)lb.onclick=(e)=>{e.stopPropagation();S.lang=S.lang==='ko'?'en':'ko';render()};
-  const go=async()=>{const v=$('nickIn')?.value.trim();if(v){S.nickname=v;sl('nick',v);S.showSplash=false;S.showNickPopup=false;render();await ensureProfile();await loadFromServer()}};
+  const go=async()=>{
+    const v=$('nickIn')?.value.trim();
+    if(!v)return;
+    // 닉네임 중복 체크
+    const errEl=$('nickErr');if(errEl)errEl.textContent=t('nickChecking');
+    const goBtn=$('nickGo');if(goBtn)goBtn.disabled=true;
+    const existing=await api('getProfile',{nickname:v});
+    if(existing&&Array.isArray(existing)&&existing.length>0){
+      S.nickError=t('nickDup');if(errEl)errEl.textContent=t('nickDup');if(goBtn)goBtn.disabled=false;return;
+    }
+    S.nickError='';S.nickname=v;sl('nick',v);S.showSplash=false;S.showNickPopup=false;render();
+    await ensureProfile();await loadFromServer();
+  };
   const gb=$('nickGo');if(gb)gb.onclick=go;
-  const ni=$('nickIn');if(ni){ni.onclick=e=>e.stopPropagation();ni.onkeydown=e=>{if(e.key==='Enter')go()}}
-  const ov=$('nickOverlay');if(ov)ov.onclick=e=>{if(e.target===ov){S.showNickPopup=false;render()}}
+  const ni=$('nickIn');if(ni){ni.onclick=e=>e.stopPropagation();ni.oninput=()=>{S.nickError='';const err=$('nickErr');if(err)err.textContent=''};ni.onkeydown=e=>{if(e.key==='Enter')go()}}
+  const ov=$('nickOverlay');if(ov)ov.onclick=e=>{if(e.target===ov){S.showNickPopup=false;S.nickError='';render()}}
 }
 
 // --- 홈 ---
 function rHome(){
   const fc=S.noSigFilter?S.courses.filter(c=>c.no_signal):S.courses;
   return`<div style="padding-bottom:72px">
-  <div style="padding:16px 14px 10px;display:flex;justify-content:space-between;align-items:center">
+  <!-- 접속자 수 -->
+  <div class="online-bar"><div class="online-dot"></div>${S.totalUsers||0}${S.lang==='ko'?'명의 러너':'runners'}</div>
+  <div style="padding:4px 14px 10px;display:flex;justify-content:space-between;align-items:center">
     <h1 style="font-size:22px;font-weight:900;letter-spacing:-1px">${t('app')}</h1>
     <div style="display:flex;gap:6px;align-items:center">
       <button id="langT" style="padding:4px 10px;border-radius:10px;background:#f3f4f6;font-size:10px;font-weight:600">${t('langSw')}</button>
-      <div style="padding:4px 10px;border-radius:10px;background:#ecfdf5;font-size:10px;font-weight:700;color:var(--g1)">${S.nickname}</div>
+      <div style="padding:4px 10px;border-radius:10px;background:#ecfdf5;font-size:11px;font-weight:800;color:var(--g1)">${S.nickname}</div>
     </div>
   </div>
   <div style="padding:0 12px 10px">
@@ -240,7 +265,6 @@ function rHome(){
       <div style="width:40px;height:24px;border-radius:12px;background:${S.noSigFilter?'var(--g1)':'#d1d5db'};position:relative;transition:background .2s"><div style="width:20px;height:20px;border-radius:10px;background:#fff;position:absolute;top:2px;left:${S.noSigFilter?'18px':'2px'};transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
     </div>
   </div>
-  <!-- 신호등 범례 -->
   <div style="display:flex;gap:12px;padding:0 14px 10px;font-size:10px;color:var(--sub)">
     <span style="display:flex;align-items:center;gap:3px"><div class="signal sig-green" style="width:12px;height:12px;font-size:0"></div>${t('sigG')}</span>
     <span style="display:flex;align-items:center;gap:3px"><div class="signal sig-yellow" style="width:12px;height:12px;font-size:0"></div>${t('sigY')}</span>
@@ -250,29 +274,19 @@ function rHome(){
 </div>`}
 
 function rSq(c,type,i){
-  const lk=type==='official'?gLk(c.id):rLk(c.id);
-  const cm=type==='official'?gCm(c.id):rCm(c.id);
-  return`
-  <div data-open="${type}:${c.id}" class="sq scale-in" style="animation-delay:${(i||0)*.04}s">
+  const lk=type==='official'?gLk(c.id):rLk(c.id),cm=type==='official'?gCm(c.id):rCm(c.id);
+  return`<div data-open="${type}:${c.id}" class="sq scale-in" style="animation-delay:${(i||0)*.04}s">
     <div class="sq-top" style="background:linear-gradient(135deg,${c.color||'#059669'}08,${c.color||'#059669'}20)">${c.emoji||'📍'}</div>
     <div class="sq-sig"><div class="signal ${sigClass(c)}"></div></div>
-    <div class="sq-bot">
-      <div class="sq-name">${cn(c)}</div>
-      <div class="sq-info">${ca(c)} · ${c.distance}km</div>
-      <div class="sq-stats"><span>❤️${lk}</span><span>💬${cm.length}</span>${type!=='official'?'<span style="font-size:9px">👤'+(c.author||'')+'</span>':''}</div>
-    </div>
+    <div class="sq-bot"><div class="sq-name">${cn(c)}</div><div class="sq-info">${ca(c)} · ${c.distance}km</div><div class="sq-stats"><span>❤️${lk}</span><span>💬${cm.length}</span>${type!=='official'?'<span style="font-size:9px">👤'+(c.author||'')+'</span>':''}</div></div>
   </div>`}
 
 // --- 추천코스 ---
 function rRecTab(){
   const sorted=[...S.recCourses].sort((a,b)=>(b.ts||0)-(a.ts||0));
-  return`<div style="padding-bottom:72px">
-  <div style="padding:16px 14px 10px;display:flex;justify-content:space-between;align-items:center">
-    <h1 style="font-size:22px;font-weight:900">${t('recTitle')}</h1>
-    <button data-action="openWriteRec" style="padding:8px 14px;border-radius:12px;background:var(--g1);color:#fff;font-size:12px;font-weight:700">+ ${t('writeRec')}</button>
-  </div>
-  ${sorted.length===0?`<div style="text-align:center;padding:60px 0;color:var(--dim)"><div style="font-size:40px;margin-bottom:10px">📝</div><div style="font-size:13px">${t('noRec')}</div></div>`:
-  `<div class="grid">${sorted.map((c,i)=>rSq(c,'rec',i)).join('')}</div>`}
+  return`<div style="padding-bottom:72px"><div class="online-bar"><div class="online-dot"></div>${S.totalUsers||0}${S.lang==='ko'?'명의 러너':'runners'}</div>
+  <div style="padding:4px 14px 10px;display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:22px;font-weight:900">${t('recTitle')} 📝</h1><button data-action="openWriteRec" style="padding:8px 14px;border-radius:12px;background:var(--g1);color:#fff;font-size:12px;font-weight:700">+ ${t('writeRec')}</button></div>
+  ${sorted.length===0?`<div style="text-align:center;padding:60px 0;color:var(--dim)"><div style="font-size:40px;margin-bottom:10px">📝</div><div style="font-size:13px">${t('noRec')}</div></div>`:`<div class="grid">${sorted.map((c,i)=>rSq(c,'rec',i)).join('')}</div>`}
 </div>`}
 
 // --- 상세 ---
@@ -283,10 +297,7 @@ function rDetail(){
   return`<div style="padding-bottom:72px">
   <div class="detail-hero" style="background:linear-gradient(135deg,${c.color||'#059669'},${c.color||'#059669'}bb)">
     <div style="position:relative;z-index:1">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <button data-action="back" style="background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:700">${t('back')}</button>
-        <div class="signal ${sigClass(c)}" style="width:28px;height:28px;font-size:0;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>
-      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><button data-action="back" style="background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:700">${t('back')}</button><div class="signal ${sigClass(c)}" style="width:28px;height:28px;font-size:0;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div></div>
       <div style="font-size:40px;margin-bottom:4px">${c.emoji||'📍'}</div>
       <h1 style="font-size:22px;font-weight:900;color:#fff">${cn(c)}</h1>
       <p style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">${ca(c)} · ${c.distance}km · ${cdf(c)}</p>
@@ -294,9 +305,7 @@ function rDetail(){
   </div>
   <div style="padding:12px">
     <div class="card"><div id="detailMap" style="width:100%;height:200px;border-radius:12px;background:#e5e7eb"></div></div>
-    <div class="card"><p style="font-size:14px;line-height:1.7">${cd(c)}</p>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${(c.tags||[]).map(tg=>`<span style="background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;color:var(--sub)">#${tl(tg)}</span>`).join('')}</div>
-    </div>
+    <div class="card"><p style="font-size:14px;line-height:1.7">${cd(c)}</p><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${(c.tags||[]).map(tg=>`<span style="background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;color:var(--sub)">#${tl(tg)}</span>`).join('')}</div></div>
     <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <button data-action="like" style="display:flex;align-items:center;gap:5px;padding:8px 16px;border-radius:12px;border:1.5px solid ${il?'#ef4444':'#e5e7eb'};background:${il?'#fef2f2':'#fff'};font-size:14px;font-weight:700;color:${il?'#ef4444':'var(--sub)'}">${il?'❤️':'🤍'} ${lk}</button>
       ${isOff?`<div style="display:flex;gap:2px">${[1,2,3,4,5].map(s=>`<button data-rate="${s}" style="background:none;font-size:20px;padding:0;filter:${s<=gMr(c.id)?'none':'grayscale(1) opacity(.3)'}">⭐</button>`).join('')}</div>`:''}
@@ -319,8 +328,7 @@ function rWriteRec(){
     <div class="card"><label class="lbl">${t('recDesc')} *</label><textarea id="rf_desc" class="inp" rows="2" maxlength="300" style="resize:none"></textarea></div>
     <div class="card"><label class="lbl">${t('recMapGuide')}</label><div id="recFormMap" style="width:100%;height:180px;border-radius:12px;background:#e5e7eb;margin-top:4px"></div></div>
     <div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="lbl">${t('recDist')}</label><input id="rf_dist" type="number" class="inp" step="0.1"></div><div><label class="lbl">${t('recDiff')}</label><select id="rf_diff" class="inp"><option value="easy">${t('easy')}</option><option value="medium">${t('med')}</option><option value="hard">${t('hard')}</option></select></div></div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px">${tags.map(tg=>`<button data-rectag="${tg}" class="chip rec-tag-btn">#${tl(tg)}</button>`).join('')}</div>
-    </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px">${tags.map(tg=>`<button data-rectag="${tg}" class="chip rec-tag-btn">#${tl(tg)}</button>`).join('')}</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:12px"><button data-action="closeModal" style="padding:14px;border-radius:14px;background:#f3f4f6;font-weight:700;color:var(--sub)">${t('cancel')}</button><button data-action="submitRec" style="padding:14px;border-radius:14px;background:var(--g1);color:#fff;font-weight:700">${t('post')}</button></div>
   </div></div>`}
 
@@ -342,8 +350,7 @@ function rGroupTab(){return`<div style="padding-bottom:72px"><div style="padding
   return`<div class="card scale-in" style="animation-delay:${i*.04}s"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:800">${g.title||'--'}</div><div style="font-size:11px;color:var(--sub);margin-top:2px">${c?cn(c)+' · '+c.distance+'km':''}</div></div><div style="text-align:right;font-size:10px;color:var(--dim)">${d.getMonth()+1}/${d.getDate()}<br>${mb.length}/${g.max_members}${t('members')}</div></div>
   <button data-ga="${jd?'leave':'join'}:${g.id}" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;background:${jd?'#fef2f2':'#7c3aed'};color:${jd?'#ef4444':'#fff'};font-weight:700;font-size:12px;border:${jd?'1px solid #fecaca':'none'}">${jd?t('leave'):t('join')}</button></div>`}).join('')}</div></div>`}
 
-function rCreateGroup(){
-  return`<div style="padding-bottom:72px"><div style="padding:16px;display:flex;align-items:center;gap:10px"><button data-action="closeModal" style="font-size:20px;background:none">${t('back')}</button><h2 style="font-size:18px;font-weight:900">🤝 ${t('createGr')}</h2></div>
+function rCreateGroup(){return`<div style="padding-bottom:72px"><div style="padding:16px;display:flex;align-items:center;gap:10px"><button data-action="closeModal" style="font-size:20px;background:none">${t('back')}</button><h2 style="font-size:18px;font-weight:900">🤝 ${t('createGr')}</h2></div>
   <div style="padding:0 12px"><div class="card" style="display:flex;flex-direction:column;gap:10px">
     <div><label class="lbl">코스</label><select id="grC" class="inp">${[...S.courses,...S.recCourses].map(c=>`<option value="${c.id}">${cn(c)}</option>`).join('')}</select></div>
     <div><label class="lbl">제목</label><input id="grT" class="inp"></div>
@@ -354,7 +361,7 @@ function rCreateGroup(){
 
 // --- MY ---
 function rMyTab(){return`<div style="padding-bottom:72px"><div style="padding:16px 14px 10px"><h1 style="font-size:22px;font-weight:900">MY 🏅</h1></div>
-  <div style="padding:0 12px"><div class="card" style="display:flex;gap:12px;text-align:center"><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.length}</div><div style="font-size:10px;color:var(--sub)">러닝</div></div><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.reduce((s,r)=>s+(r.distance||0),0).toFixed(1)}</div><div style="font-size:10px;color:var(--sub)">km</div></div><div style="flex:1"><div style="font-size:14px;font-weight:700;margin-top:4px">${S.nickname}</div><div style="font-size:10px;color:var(--sub)">닉네임</div></div></div>
+  <div style="padding:0 12px"><div class="card" style="display:flex;gap:12px;text-align:center"><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.length}</div><div style="font-size:10px;color:var(--sub)">러닝</div></div><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.reduce((s,r)=>s+(r.distance||0),0).toFixed(1)}</div><div style="font-size:10px;color:var(--sub)">km</div></div><div style="flex:1"><div style="font-size:15px;font-weight:800;margin-top:4px">${S.nickname}</div><div style="font-size:10px;color:var(--sub)">닉네임</div></div></div>
   ${S.myRecords.length===0?`<div style="text-align:center;padding:40px 0;color:var(--dim)"><div style="font-size:36px;margin-bottom:8px">🏅</div><div style="font-size:13px">아직 기록이 없어요</div></div>`:
   S.myRecords.map(r=>{const c=[...S.courses,...S.recCourses].find(x=>x.id===r.course_id);return`<div class="card"><div style="display:flex;justify-content:space-between"><span style="font-weight:700;font-size:13px">${c?cn(c):'--'}</span><span style="font-size:10px;color:var(--dim)">${new Date(r.ts||Date.now()).toLocaleDateString()}</span></div><div style="display:flex;gap:14px;margin-top:6px;font-size:12px;color:var(--sub)"><span>📏${(r.distance||0).toFixed(2)}km</span><span>⏱️${fmtTime(r.duration||0)}</span><span>⚡${r.avg_pace||'--'}</span></div></div>`}).join('')}
   </div></div>`}
@@ -423,6 +430,7 @@ function mapPH(el){if(el)el.innerHTML='<div style="display:flex;align-items:cent
 function initDetailMap(){const el=$('detailMap');if(!el)return;const c=S.selectedCourse;if(!c||!hasKakao()){mapPH(el);return}const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(c.lat,c.lng),level:5});new kakao.maps.Marker({map,position:new kakao.maps.LatLng(c.lat,c.lng)});if(c.route_coords?.length>1)new kakao.maps.Polyline({map,path:c.route_coords.map(p=>new kakao.maps.LatLng(p.lat,p.lng)),strokeWeight:4,strokeColor:c.color||'#059669',strokeOpacity:.8,strokeStyle:'solid'})}
 function initRecFormMap(){const el=$('recFormMap');if(!el)return;if(!hasKakao()){mapPH(el);return}const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),level:7});let mk=new kakao.maps.Marker({map,position:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),draggable:true});kakao.maps.event.addListener(map,'click',e=>{S.recFormLat=e.latLng.getLat();S.recFormLng=e.latLng.getLng();mk.setPosition(e.latLng)})}
 
+// === Supabase 연동 ===
 async function loadFromServer(){
   try{
     const c=await api('getCourses');if(c?.length)S.courses=c;
@@ -434,6 +442,8 @@ async function loadFromServer(){
     const rcm=await api('getRecComments');if(Array.isArray(rcm)){S.recComments={};rcm.forEach(c=>{if(!S.recComments[c.rec_course_id])S.recComments[c.rec_course_id]=[];S.recComments[c.rec_course_id].push({id:c.id,user:c.nickname,text:c.body,ts:new Date(c.created_at).getTime()})})}
     const gr=await api('getGroupRuns');if(Array.isArray(gr))S.groupRuns=gr.map(g=>({...g,members:g.group_run_members||[]}));
     if(S.userId){const mr=await api('getMyRecords',{user_id:S.userId});if(Array.isArray(mr))S.myRecords=mr}
+    // 총 러너 수 가져오기
+    const allProfiles=await api('getAllProfiles');if(Array.isArray(allProfiles))S.totalUsers=allProfiles.length;
     sl('likes',S.likes);sl('ratings',S.ratings);sl('comments',S.comments);sl('recs',S.recCourses);sl('rlikes',S.recLikes);sl('rcomments',S.recComments);sl('groups',S.groupRuns);sl('records',S.myRecords);
   }catch(e){console.log('Offline:',e)}
   render();
@@ -452,6 +462,8 @@ function init(){
   S.groupRuns=gl('groups',[]);S.myRecords=gl('records',[]);
   S.showSplash=true;
   render();
+  // 대문에서 러너 수 표시
+  api('getAllProfiles').then(d=>{if(Array.isArray(d)){S.totalUsers=d.length;render()}}).catch(()=>{});
   if(S.nickname)ensureProfile().then(()=>loadFromServer());
 }
 init();
