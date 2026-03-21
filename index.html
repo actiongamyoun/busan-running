@@ -20,14 +20,13 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .scale-in{animation:scaleIn .4s ease both}
 
 /* 대문 */
-.splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e8f5e9;overflow:hidden;cursor:pointer}
-.splash-city{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent,#c8e6c9);display:flex;align-items:flex-end;justify-content:center;gap:8px;padding-bottom:20px}
-.splash-bldg{background:#a5d6a7;border-radius:4px 4px 0 0;opacity:.5}
-.splash h1{font-size:48px;font-weight:900;color:#1b5e20;letter-spacing:-3px;z-index:1}
-.splash p{font-size:16px;color:#388e3c;margin-top:6px;font-weight:500;z-index:1}
-.splash-runner{font-size:80px;z-index:1;margin-bottom:12px}
-.splash-hint{position:absolute;bottom:40px;font-size:13px;color:#66bb6a;z-index:1;animation:fadeIn 1.5s ease 1s both}
-
+.splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:40px 24px 60px;background:#000;overflow:hidden;cursor:pointer}
+.splash-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.55) 70%,rgba(0,0,0,.85) 100%),url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80') center/cover}
+.splash *{position:relative;z-index:1}
+.splash h1{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;text-align:center;line-height:1.1}
+.splash p{font-size:15px;color:rgba(255,255,255,.7);margin:10px 0 0;text-align:center}
+.splash-hint{margin-top:32px;font-size:13px;color:rgba(255,255,255,.35);animation:fadeIn 1.5s ease 1s both}
+  
 /* 닉네임 팝업 */
 .nick-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:flex-end;justify-content:center}
 .nick-popup{background:#fff;border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:400px;animation:slideUp .3s ease both}
@@ -193,11 +192,9 @@ function render(){
 
 // --- 대문 (심플 일러스트) ---
 function rSplash(){
-  const bldgs=[60,90,45,110,70,55,95,40,80,65,50,100,75,85];
   return`<div class="splash fade-in" id="splashArea">
-  <div class="splash-city">${bldgs.map(h=>`<div class="splash-bldg" style="width:${12+Math.random()*20}px;height:${h}px"></div>`).join('')}</div>
-  <div class="splash-runner">🏃‍♂️</div>
-  <h1>${t('splash1')}</h1>
+  <div class="splash-bg"></div>
+  <h1>${S.lang==='ko'?'부산을':'Run'}<br>${S.lang==='ko'?'달리다':'Busan'}</h1>
   <p>${t('splashSub')}</p>
   <div class="splash-hint">${t('splashHint')}</div>
 </div>`}
