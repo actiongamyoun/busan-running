@@ -22,8 +22,8 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 /* 대문 */
 .splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:40px 24px 60px;background:#000;overflow:hidden;cursor:pointer}
 .splash-bg{position:absolute;inset:0;background:#000}
-.splash-ill{position:absolute;inset:0;background:url('https://raw.githubusercontent.com/actiongamyoun/busan-running/main/splash.png') center center/cover no-repeat;opacity:.45}
-.splash *{position:relative;z-index:1}
+.splash-ill{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.45}
+.splash-ill img{width:100%;height:100%;object-fit:cover}.splash *{position:relative;z-index:1}
 .splash h1{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;text-align:center;line-height:1.1}
 .splash p{font-size:15px;color:rgba(255,255,255,.7);margin:10px 0 0;text-align:center}
 .splash-hint{margin-top:32px;font-size:13px;color:rgba(255,255,255,.35);animation:fadeIn 1.5s ease 1s both}
@@ -204,7 +204,7 @@ function render(){
 function rSplash(){return`
 <div class="splash fade-in" id="splashArea">
   <div class="splash-bg"></div>
-  <div class="splash-ill"></div>
+  <div class="splash-ill"><img src="https://raw.githubusercontent.com/actiongamyoun/busan-running/main/splash.png"></div>
   ${S.totalUsers?`<div class="splash-users">🏃 ${S.totalUsers}${t('online')}</div>`:''}
   <h1>${S.lang==='ko'?'부산을':'Run'}<br>${S.lang==='ko'?'달리다':'Busan'}</h1>
   <p>${t('splashSub')}</p>
