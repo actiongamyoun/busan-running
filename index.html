@@ -3,663 +3,180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>부산 러닝 | Busan Running</title>
+<title>부산러너 | Busan Runner</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
-body{font-family:'Noto Sans KR',sans-serif;background:#f0fdf4;min-height:100vh;color:#111827}
+body{font-family:'Noto Sans KR',sans-serif;background:#f8faf8;min-height:100vh;color:#1a1a1a}
 input,textarea,select{-webkit-user-select:text;user-select:text;font-family:inherit;outline:none}
-:root{--g1:#059669;--g2:#0ea5e9;--card:#fff;--txt:#374151;--sub:#6b7280;--dim:#9ca3af}
 button{font-family:inherit;cursor:pointer;border:none;outline:none}
-.hide{display:none!important}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:4px}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.fade-up{animation:fadeUp .4s ease both}
-.card{background:var(--card);border-radius:20px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.06);margin-bottom:14px;transition:all .25s}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(5,150,105,.12)}
-.tab-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e5e7eb;display:flex;z-index:100;padding:6px 0 env(safe-area-inset-bottom,8px)}
-.tab-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;background:none;font-size:10px;font-weight:600;color:var(--dim);transition:color .2s}
-.tab-bar button.active{color:var(--g1)}
-.tab-bar button .icon{font-size:20px}
-.chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;transition:all .15s;background:#f3f4f6;color:#4b5563}
-.chip.on{background:var(--g1);color:#fff}
-.toggle-track{width:44px;height:26px;border-radius:13px;position:relative;transition:background .2s;cursor:pointer}
-.toggle-thumb{width:22px;height:22px;border-radius:11px;background:#fff;position:absolute;top:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.gps-panel{position:fixed;bottom:70px;left:12px;right:12px;background:#fff;border-radius:20px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.15);z-index:90}
-.gps-stat{text-align:center;flex:1}
-.gps-stat .val{font-size:24px;font-weight:800;color:var(--g1)}
-.gps-stat .lbl{font-size:10px;color:var(--sub);margin-top:2px}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center}
-.modal-content{background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto}
-.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.badge-green{background:#dcfce7;color:#059669}
-.inp{width:100%;padding:10px 12px;border-radius:12px;border:2px solid #e5e7eb;font-size:14px;margin-top:4px}
+:root{--g1:#059669;--g2:#0ea5e9;--card:#fff;--sub:#6b7280;--dim:#9ca3af}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .6s ease both}
+.scale-in{animation:scaleIn .4s ease both}
+
+/* 대문 */
+.splash{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e8f5e9;overflow:hidden;cursor:pointer}
+.splash-city{position:absolute;bottom:0;left:0;right:0;height:40%;background:linear-gradient(180deg,transparent,#c8e6c9);display:flex;align-items:flex-end;justify-content:center;gap:8px;padding-bottom:20px}
+.splash-bldg{background:#a5d6a7;border-radius:4px 4px 0 0;opacity:.5}
+.splash h1{font-size:48px;font-weight:900;color:#1b5e20;letter-spacing:-3px;z-index:1}
+.splash p{font-size:16px;color:#388e3c;margin-top:6px;font-weight:500;z-index:1}
+.splash-runner{font-size:80px;z-index:1;margin-bottom:12px}
+.splash-hint{position:absolute;bottom:40px;font-size:13px;color:#66bb6a;z-index:1;animation:fadeIn 1.5s ease 1s both}
+
+/* 닉네임 팝업 */
+.nick-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:flex;align-items:flex-end;justify-content:center}
+.nick-popup{background:#fff;border-radius:24px 24px 0 0;padding:32px 24px 40px;width:100%;max-width:400px;animation:slideUp .3s ease both}
+
+/* 탭바 */
+.tab-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid #f0f0f0;display:flex;z-index:100;padding:4px 0 env(safe-area-inset-bottom,6px)}
+.tab-bar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0;background:none;font-size:9px;font-weight:600;color:var(--dim);transition:color .2s}
+.tab-bar button.on{color:var(--g1)}
+.tab-bar button .ti{font-size:22px}
+
+/* 신호등 */
+.signal{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.sig-green{background:#22c55e}
+.sig-yellow{background:#eab308}
+.sig-red{background:#ef4444}
+
+/* 그리드 카드 */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px}
+.sq{position:relative;border-radius:16px;overflow:hidden;background:var(--card);box-shadow:0 2px 12px rgba(0,0,0,.06);cursor:pointer;transition:transform .2s;aspect-ratio:1}
+.sq:active{transform:scale(.97)}
+.sq-top{height:50%;display:flex;align-items:center;justify-content:center;font-size:44px}
+.sq-bot{padding:8px 10px;height:50%}
+.sq-name{font-size:13px;font-weight:800;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sq-info{font-size:10px;color:var(--sub);margin-top:2px}
+.sq-stats{display:flex;gap:8px;font-size:10px;color:var(--dim);margin-top:auto;padding-top:4px}
+.sq-sig{position:absolute;top:8px;right:8px}
+
+/* 상세/카드/입력 */
+.detail-hero{padding:20px 16px 28px;color:#fff;position:relative;overflow:hidden;border-radius:0 0 28px 28px}
+.inp{width:100%;padding:10px 12px;border-radius:12px;border:1.5px solid #e5e7eb;font-size:14px;margin-top:4px;background:#fff}
 .inp:focus{border-color:var(--g1)}
-.lbl{font-size:12px;font-weight:600;color:var(--sub);display:block;margin-bottom:2px}
+.lbl{font-size:11px;font-weight:600;color:var(--sub);display:block;margin-bottom:2px}
+.card{background:var(--card);border-radius:16px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.05);margin-bottom:10px}
+.chip{padding:4px 10px;border-radius:16px;font-size:11px;font-weight:600;background:#f3f4f6;color:#4b5563;transition:all .15s}
+.chip.on{background:var(--g1);color:#fff}
+.gps-panel{position:fixed;bottom:66px;left:10px;right:10px;background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-radius:20px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,.12);z-index:90}
+.gps-stat{text-align:center;flex:1}
+.gps-stat .val{font-size:26px;font-weight:900;color:var(--g1)}
+.gps-stat .lbl{font-size:9px;color:var(--sub);margin-top:2px}
 </style>
 </head>
 <body>
 <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=52b23b080ca355ccf759fc1686d95d15&libraries=services"></script>
 <div id="app"></div>
 <script>
-// === 보안 ===
 document.addEventListener('contextmenu',e=>e.preventDefault());
 document.addEventListener('dragstart',e=>e.preventDefault());
 document.addEventListener('keydown',e=>{if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C'].includes(e.key))||(e.ctrlKey&&e.key==='u'))e.preventDefault()});
 
-// === 다국어 ===
 const T={ko:{
-appName:'부산 러닝',subtitle:'신호 없이 달리는 부산의 베스트 코스',enterNick:'닉네임을 입력하세요',nickPH:'예: 해운대러너🏃',start:'시작하기 →',
-total:'전체 코스',noSig:'신호없는',result:'검색 결과',noSigOnly:'신호없는 코스만 보기',noSigDesc:'끊김 없이 달릴 수 있는 코스',
-diff:'난이도',dist:'거리',vibe:'분위기',sort:'정렬',all:'전체',easy:'쉬움',med:'보통',hard:'어려움',
-short:'~5km',mid:'5~10km',long:'10km+',scenic:'경치',quiet:'조용',beach:'해변',trail:'트레일',urban:'도심',night:'야경',
-rec:'추천순',byRate:'평점순',byLike:'좋아요순',byDist:'거리순',
-noResult:'조건에 맞는 코스가 없어요',adjust:'필터를 조정해보세요!',
-back:'← 뒤로',noSigBadge:'🚫 신호없는 코스',diffL:'난이도',distL:'거리',elevL:'고도차',surfL:'노면',
-like:'좋아요',rating:'평점',ppl:'명',cmtTitle:'💬 댓글',cmtPH:'이 코스 어떠셨나요?',submit:'등록',
+app:'부산러너',sub:'달리기 좋은 부산의 모든 코스',
+noSigOnly:'신호없는 코스만',
+back:'←',like:'좋아요',rating:'평점',ppl:'명',
+cmt:'댓글',cmtPH:'이 코스 어떠셨나요?',post:'등록',
 firstCmt:'첫 댓글을 남겨보세요!',more:'개 더 보기',
-tabHome:'코스',tabRec:'추천코스',tabRun:'러닝',tabGroup:'같이달려요',tabMy:'MY',
+tabHome:'코스',tabRec:'추천',tabRun:'러닝',tabGroup:'같이달려요',tabMy:'MY',
 startRun:'러닝 시작',pause:'일시정지',resume:'이어달리기',stop:'종료',
-distKm:'거리(km)',time:'시간',pace:'페이스',selCourse:'코스를 선택하세요',
-grTitle:'같이 달려요 🤝',createGr:'모임 만들기',join:'참가',leave:'취소',
-members:'명 참가',maxM:'정원',runDate:'날짜',paceL:'페이스',grTitleIn:'모임 제목',
-grDesc:'설명',create:'만들기',cancel:'취소',
-recTitle:'추천코스 📝',writeRec:'코스 등록',recName:'코스 이름',recDesc:'코스 설명',
-recDist:'거리(km)',recElev:'고도차(m)',recSurf:'노면',recDiff:'난이도',recTags:'태그',
-recMapGuide:'지도를 탭하여 출발점을 지정하세요',recLatLng:'위치 좌표',
-recSortNew:'최신순',recSortPop:'인기순',noRec:'아직 추천코스가 없어요',firstRec:'첫 번째 코스를 등록해보세요!',
-comingSoon:'Coming Soon',runRecord:'내 러닝 기록',expandArea:'지역 확장',
-footer:'달리는 당신이 아름답습니다',ver:'부산 러닝 앱 v1.0',langSw:'English',
+dist:'거리',time:'시간',pace:'페이스',selCourse:'코스를 선택하세요',
+grTitle:'같이 달려요',createGr:'모임 만들기',join:'참가',leave:'취소',
+members:'명',maxM:'정원',runDate:'날짜',paceL:'페이스',
+recTitle:'추천코스',writeRec:'코스 등록',recName:'코스 이름',recDesc:'설명',
+recDist:'거리(km)',recDiff:'난이도',recMapGuide:'지도를 탭하여 출발점 지정',
+easy:'쉬움',med:'보통',hard:'어려움',cancel:'취소',create:'만들기',
+noRec:'아직 추천코스가 없어요',firstRec:'첫 번째 코스를 등록해보세요!',
+splash1:'부산러너',splashSub:'신호 없이, 끊김 없이 달리자',splashHint:'화면을 터치하세요',
+nickTitle:'닉네임을 알려주세요',nickPH:'예: 해운대러너',enter:'시작하기',
+langSw:'EN',sigG:'신호없는',sigY:'보통',sigR:'신호있는',
 },en:{
-appName:'Busan Running',subtitle:'Best signal-free courses in Busan',enterNick:'Enter your nickname',nickPH:'e.g. RunnerKim🏃',start:'Get Started →',
-total:'All Courses',noSig:'Signal-free',result:'Results',noSigOnly:'Signal-free only',noSigDesc:'No traffic lights',
-diff:'Difficulty',dist:'Distance',vibe:'Vibe',sort:'Sort',all:'All',easy:'Easy',med:'Medium',hard:'Hard',
-short:'~5km',mid:'5~10km',long:'10km+',scenic:'Scenic',quiet:'Quiet',beach:'Beach',trail:'Trail',urban:'Urban',night:'Night',
-rec:'Recommended',byRate:'Top Rated',byLike:'Most Liked',byDist:'Distance',
-noResult:'No matching courses',adjust:'Try adjusting filters!',
-back:'← Back',noSigBadge:'🚫 Signal-free',diffL:'Difficulty',distL:'Distance',elevL:'Elevation',surfL:'Surface',
-like:'Like',rating:'Rating',ppl:'ppl',cmtTitle:'💬 Comments',cmtPH:'How was this course?',submit:'Post',
-firstCmt:'Be the first to comment!',more:' more',
+app:'Busan Runner',sub:'Best running courses in Busan',
+noSigOnly:'Signal-free only',
+back:'←',like:'Like',rating:'Rating',ppl:'ppl',
+cmt:'Comments',cmtPH:'How was this course?',post:'Post',
+firstCmt:'Be the first!',more:' more',
 tabHome:'Courses',tabRec:'Picks',tabRun:'Run',tabGroup:'Group',tabMy:'MY',
-startRun:'Start Run',pause:'Pause',resume:'Resume',stop:'Finish',
-distKm:'Dist(km)',time:'Time',pace:'Pace',selCourse:'Select a course',
-grTitle:'Group Run 🤝',createGr:'Create Group',join:'Join',leave:'Leave',
-members:' joined',maxM:'Max',runDate:'Date',paceL:'Pace',grTitleIn:'Title',
-grDesc:'Description',create:'Create',cancel:'Cancel',
-recTitle:'Picks 📝',writeRec:'Add Course',recName:'Course name',recDesc:'Description',
-recDist:'Distance(km)',recElev:'Elevation(m)',recSurf:'Surface',recDiff:'Difficulty',recTags:'Tags',
-recMapGuide:'Tap map to set start point',recLatLng:'Coordinates',
-recSortNew:'Newest',recSortPop:'Popular',noRec:'No picks yet',firstRec:'Be the first to share!',
-comingSoon:'Coming Soon',runRecord:'My Records',expandArea:'More Areas',
-footer:'You are beautiful when you run',ver:'Busan Running v1.0',langSw:'한국어',
+startRun:'Start',pause:'Pause',resume:'Resume',stop:'Finish',
+dist:'Dist',time:'Time',pace:'Pace',selCourse:'Select course',
+grTitle:'Group Run',createGr:'Create',join:'Join',leave:'Leave',
+members:'ppl',maxM:'Max',runDate:'Date',paceL:'Pace',
+recTitle:'Picks',writeRec:'Add Course',recName:'Name',recDesc:'Description',
+recDist:'Dist(km)',recDiff:'Difficulty',recMapGuide:'Tap to set start',
+easy:'Easy',med:'Medium',hard:'Hard',cancel:'Cancel',create:'Create',
+noRec:'No picks yet',firstRec:'Share your first!',
+splash1:'Busan Runner',splashSub:'No signals, no stops',splashHint:'Tap to start',
+nickTitle:'What\'s your name?',nickPH:'e.g. RunnerKim',enter:'Let\'s go',
+langSw:'KR',sigG:'Signal-free',sigY:'Some',sigR:'Signals',
 }};
 
-// === 상태 ===
 let S={
 lang:'ko',tab:'home',nickname:'',userId:null,
 courses:[],likes:{},ratings:{},comments:{},
 recCourses:[],recLikes:{},recComments:{},
 groupRuns:[],myRecords:[],
-filters:{signal:'noSignal',difficulty:'all',distance:'all',vibe:'all'},
-sortBy:'rec',selectedCourse:null,selectedType:null, // 'official' or 'rec'
-showAllCmt:false,
+noSigFilter:false,selectedCourse:null,selectedType:null,
+showAllCmt:false,showSplash:true,showNickPopup:false,
 gpsState:'idle',gpsWatch:null,gpsCoords:[],gpsDist:0,gpsElapsed:0,gpsTimer:null,
-modal:null, // null,'detail','createGroup','writeRec'
-recSort:'new',
-recFormLat:35.15,recFormLng:129.06,
+modal:null,recFormLat:35.15,recFormLng:129.06,
 };
 
-// === 유틸 ===
 const $=id=>document.getElementById(id);
 const gl=(k,d)=>{try{return JSON.parse(localStorage.getItem('br_'+k))||d}catch{return d}};
 const sl=(k,v)=>{try{localStorage.setItem('br_'+k,JSON.stringify(v))}catch{}};
 const uid=()=>Math.random().toString(36).slice(2,9);
-function timeAgo(ts){const d=Date.now()-ts,m=Math.floor(d/6e4);if(m<1)return S.lang==='ko'?'방금':'now';if(m<60)return m+(S.lang==='ko'?'분 전':'m');const h=Math.floor(m/60);if(h<24)return h+(S.lang==='ko'?'시간 전':'h');const dy=Math.floor(h/24);return dy+(S.lang==='ko'?'일 전':'d')}
+function timeAgo(ts){const d=Date.now()-ts,m=Math.floor(d/6e4);if(m<1)return S.lang==='ko'?'방금':'now';if(m<60)return m+(S.lang==='ko'?'분 전':'m');const h=Math.floor(m/60);if(h<24)return h+(S.lang==='ko'?'시간 전':'h');return Math.floor(h/24)+(S.lang==='ko'?'일 전':'d')}
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 function fmtPace(d,s){if(!d)return'--:--';const p=s/d;return Math.floor(p/60)+"'"+String(Math.floor(p%60)).padStart(2,'0')+'"'}
 function calcDist(a,b){const R=6371e3,r=Math.PI/180,dL=(b.lat-a.lat)*r,dG=(b.lng-a.lng)*r;const x=Math.sin(dL/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dG/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
 function t(k){return T[S.lang][k]||k}
-function cn(c){return S.lang==='ko'?(c.name_ko||c.name):(c.name_en||c.name_ko||c.name)}
-function ca(c){return S.lang==='ko'?(c.area_ko||c.area||''):(c.area_en||c.area_ko||c.area||'')}
+function cn(c){return S.lang==='ko'?(c.name_ko||c.name||''):(c.name_en||c.name_ko||c.name||'')}
+function ca(c){return S.lang==='ko'?(c.area_ko||c.area||''):(c.area_en||c.area_ko||'')}
 function cd(c){return S.lang==='ko'?(c.description_ko||c.desc||''):(c.description_en||c.description_ko||c.desc||'')}
-function cs(c){return S.lang==='ko'?(c.surface_ko||c.surface||''):(c.surface_en||c.surface_ko||c.surface||'')}
+function cs(c){return S.lang==='ko'?(c.surface_ko||c.surface||''):(c.surface_en||c.surface_ko||'')}
 const DM={easy:{ko:'쉬움',en:'Easy',c:'#10b981'},medium:{ko:'보통',en:'Medium',c:'#f59e0b'},hard:{ko:'어려움',en:'Hard',c:'#ef4444'}};
 function cdf(c){const d=DM[c.difficulty]||DM.easy;return S.lang==='ko'?d.ko:d.en}
-function cdc(c){return(DM[c.difficulty]||DM.easy).c}
-const TM={no_signal:{ko:'신호없는',en:'Signal-free'},scenic:{ko:'경치좋은',en:'Scenic'},quiet:{ko:'조용한',en:'Quiet'},beach:{ko:'해변',en:'Beach'},trail:{ko:'트레일',en:'Trail'},urban:{ko:'도심',en:'Urban'},night:{ko:'야경',en:'Night'},nature:{ko:'자연',en:'Nature'}};
-function tl(tag){const m=TM[tag];return m?(S.lang==='ko'?m.ko:m.en):tag}
+const TM={no_signal:{ko:'신호없는',en:'Signal-free'},scenic:{ko:'경치',en:'Scenic'},quiet:{ko:'조용',en:'Quiet'},beach:{ko:'해변',en:'Beach'},trail:{ko:'트레일',en:'Trail'},urban:{ko:'도심',en:'Urban'},night:{ko:'야경',en:'Night'},nature:{ko:'자연',en:'Nature'}};
+function tl(tg){const m=TM[tg];return m?(S.lang==='ko'?m.ko:m.en):tg}
+// 신호등: 초록(신호없는), 노랑(일부), 빨강(신호많은)
+function sigClass(c){if(c.no_signal)return'sig-green';const tags=c.tags||[];if(tags.includes('night')||tags.includes('urban'))return'sig-red';return'sig-yellow'}
+function sigLabel(c){if(c.no_signal)return t('sigG');if(sigClass(c)==='sig-red')return t('sigR');return t('sigY')}
 
-// 좋아요/평점/댓글 (공식코스)
+async function api(action,params={}){try{const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...params})});return await r.json()}catch{return null}}
 function gLk(id){return Object.keys(S.likes).filter(k=>k.startsWith(id+':')).length}
-function iLk(id){return!!S.likes[id+':'+S.nickname]}
+function iLk(id){return!!S.likes[id+':'+S.userId]}
 function gAv(id){const e=Object.entries(S.ratings).filter(([k])=>k.startsWith(id+':'));if(!e.length)return 0;return e.reduce((s,[,v])=>s+v,0)/e.length}
 function gRc(id){return Object.entries(S.ratings).filter(([k])=>k.startsWith(id+':')).length}
-function gMr(id){return S.ratings[id+':'+S.nickname]||0}
+function gMr(id){return S.ratings[id+':'+S.userId]||0}
 function gCm(id){return(S.comments[id]||[]).sort((a,b)=>b.ts-a.ts)}
-// 좋아요/댓글 (추천코스)
 function rLk(id){return Object.keys(S.recLikes).filter(k=>k.startsWith(id+':')).length}
-function riLk(id){return!!S.recLikes[id+':'+S.nickname]}
+function riLk(id){return!!S.recLikes[id+':'+S.userId]}
 function rCm(id){return(S.recComments[id]||[]).sort((a,b)=>b.ts-a.ts)}
 
-// API
-async function api(action,params={}){try{const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...params})});return await r.json()}catch{return null}}
-
-// === 코스 데이터 ===
 const FC=[
-{id:'c01',name_ko:'해운대 문탠로드',name_en:'Moontan Road',area_ko:'해운대',area_en:'Haeundae',distance:3.2,difficulty:'easy',tags:['no_signal','scenic','beach'],no_signal:true,description_ko:'달맞이고개~송정 해안 산책로. 차도 완전 분리, 신호 제로!',description_en:'Coastal trail from Dalmaji to Songjeong. Zero traffic lights!',elevation:45,surface_ko:'포장도로',surface_en:'Paved',emoji:'🌊',color:'#0ea5e9',lat:35.1633,lng:129.1856,route_coords:[{lat:35.1633,lng:129.1856},{lat:35.159,lng:129.192},{lat:35.157,lng:129.198},{lat:35.1588,lng:129.204}]},
-{id:'c02',name_ko:'낙동강 하구 둑길',name_en:'Nakdong River Trail',area_ko:'사하/강서',area_en:'Saha/Gangseo',distance:12,difficulty:'medium',tags:['no_signal','quiet','nature'],no_signal:true,description_ko:'낙동강 하구둑~을숙도. 철새도래지, 완전 비신호.',description_en:'Flat trail along Nakdong estuary. Bird sanctuary.',elevation:5,surface_ko:'자전거도로',surface_en:'Bike path',emoji:'🦅',color:'#10b981',lat:35.067,lng:128.943,route_coords:[{lat:35.067,lng:128.943},{lat:35.072,lng:128.95},{lat:35.081,lng:128.955},{lat:35.09,lng:128.948}]},
-{id:'c03',name_ko:'이기대 해안 산책로',name_en:'Igidae Coastal Trail',area_ko:'남구',area_en:'Nam-gu',distance:5.5,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'오륙도~이기대 절벽 트레일. 뷰가 압도적.',description_en:'Cliffside trail from Oryukdo to Igidae.',elevation:180,surface_ko:'비포장+데크',surface_en:'Unpaved+Deck',emoji:'⛰️',color:'#f59e0b',lat:35.1058,lng:129.1228,route_coords:[{lat:35.1058,lng:129.1228},{lat:35.103,lng:129.118},{lat:35.101,lng:129.112},{lat:35.098,lng:129.107}]},
-{id:'c04',name_ko:'온천천 시민공원',name_en:'Oncheoncheon Park',area_ko:'동래/연제',area_en:'Dongnae',distance:7,difficulty:'easy',tags:['no_signal','quiet','urban'],no_signal:true,description_ko:'온천천~시민공원. 도심 속 신호없는 평지, 야간 조명.',description_en:'Stream-side to Citizens Park. Flat, lit, no signals.',elevation:10,surface_ko:'우레탄트랙',surface_en:'Urethane',emoji:'🏃',color:'#8b5cf6',lat:35.187,lng:129.063,route_coords:[{lat:35.187,lng:129.063},{lat:35.182,lng:129.06},{lat:35.176,lng:129.058},{lat:35.171,lng:129.056}]},
-{id:'c05',name_ko:'광안리~민락수변공원',name_en:'Gwangalli Beach Run',area_ko:'수영',area_en:'Suyeong',distance:4,difficulty:'easy',tags:['scenic','beach','night'],no_signal:false,description_ko:'광안대교 야경 러닝. 저녁 추천!',description_en:'Run with Gwangan Bridge night views.',elevation:3,surface_ko:'포장도로',surface_en:'Paved',emoji:'🌉',color:'#ec4899',lat:35.1531,lng:129.1187,route_coords:[{lat:35.1531,lng:129.1187},{lat:35.152,lng:129.123},{lat:35.151,lng:129.129},{lat:35.153,lng:129.134}]},
-{id:'c06',name_ko:'갈맷길 1코스(태종대)',name_en:'Taejongdae Trail',area_ko:'영도',area_en:'Yeongdo',distance:8.5,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'태종대 순환. 차량통제, 절벽+등대 뷰.',description_en:'Taejongdae loop. Vehicle-free, cliff & lighthouse.',elevation:250,surface_ko:'포장+비포장',surface_en:'Mixed',emoji:'🏝️',color:'#14b8a6',lat:35.052,lng:129.084,route_coords:[{lat:35.052,lng:129.084},{lat:35.049,lng:129.08},{lat:35.046,lng:129.076},{lat:35.05,lng:129.072}]},
-{id:'c07',name_ko:'수영강 리버사이드',name_en:'Suyeong Riverside',area_ko:'수영/해운대',area_en:'Suyeong',distance:6,difficulty:'easy',tags:['no_signal','quiet','urban'],no_signal:true,description_ko:'수영강변~센텀. 평지, 신호없음.',description_en:'Riverside to Centum. Flat, signal-free.',elevation:5,surface_ko:'자전거도로',surface_en:'Bike path',emoji:'🌿',color:'#06b6d4',lat:35.169,lng:129.13,route_coords:[{lat:35.169,lng:129.13},{lat:35.172,lng:129.135},{lat:35.175,lng:129.14},{lat:35.177,lng:129.145}]},
-{id:'c08',name_ko:'장산 숲길 트레일',name_en:'Jangsan Forest Trail',area_ko:'해운대',area_en:'Haeundae',distance:9,difficulty:'hard',tags:['no_signal','quiet','trail'],no_signal:true,description_ko:'장산 둘레길. 숲속 트레일, 성취감 최고.',description_en:'Jangsan mountain loop. Deep forest trail.',elevation:350,surface_ko:'비포장 산길',surface_en:'Mountain path',emoji:'🌲',color:'#65a30d',lat:35.185,lng:129.168,route_coords:[{lat:35.185,lng:129.168},{lat:35.188,lng:129.172},{lat:35.191,lng:129.175},{lat:35.187,lng:129.179}]},
-{id:'c09',name_ko:'다대포~몰운대',name_en:'Dadaepo to Morundae',area_ko:'사하',area_en:'Saha',distance:5,difficulty:'medium',tags:['no_signal','scenic','beach'],no_signal:true,description_ko:'낙조분수~몰운대. 일몰 황금빛 힐링.',description_en:'Sunset fountain to Morundae. Golden healing.',elevation:60,surface_ko:'포장+데크',surface_en:'Paved+Deck',emoji:'🌅',color:'#f97316',lat:35.047,lng:128.966,route_coords:[{lat:35.047,lng:128.966},{lat:35.045,lng:128.962},{lat:35.043,lng:128.957},{lat:35.046,lng:128.952}]},
-{id:'c10',name_ko:'APEC나루공원',name_en:'APEC Naru Park',area_ko:'해운대',area_en:'Haeundae',distance:2.5,difficulty:'easy',tags:['quiet','urban','night'],no_signal:false,description_ko:'요트경기장 주변. 야경, 접근성 좋은 가벼운 코스.',description_en:'Marina park loop. Night views, easy.',elevation:2,surface_ko:'우레탄트랙',surface_en:'Urethane',emoji:'✨',color:'#a855f7',lat:35.1695,lng:129.1365,route_coords:[{lat:35.1695,lng:129.1365},{lat:35.171,lng:129.138},{lat:35.17,lng:129.14},{lat:35.1685,lng:129.1385}]},
-{id:'c11',name_ko:'범어사~금정산성',name_en:'Beomeosa Fortress Trail',area_ko:'금정',area_en:'Geumjeong',distance:11,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'범어사~금정산성. 부산 최고봉 경유.',description_en:'Temple to fortress. Busan peak accessible.',elevation:520,surface_ko:'비포장 산길',surface_en:'Mountain path',emoji:'🏯',color:'#dc2626',lat:35.284,lng:129.068,route_coords:[{lat:35.284,lng:129.068},{lat:35.287,lng:129.065},{lat:35.291,lng:129.062},{lat:35.295,lng:129.06}]},
-{id:'c12',name_ko:'송도 스카이워크',name_en:'Songdo Skywalk',area_ko:'서구',area_en:'Seo-gu',distance:3.8,difficulty:'medium',tags:['scenic','beach'],no_signal:false,description_ko:'송도~암남공원 데크. 바다 위 달리는 기분!',description_en:'Songdo deck trail. Run above the sea!',elevation:30,surface_ko:'데크+포장',surface_en:'Deck+Paved',emoji:'🌁',color:'#6366f1',lat:35.075,lng:129.019,route_coords:[{lat:35.075,lng:129.019},{lat:35.073,lng:129.016},{lat:35.07,lng:129.014},{lat:35.068,lng:129.012}]}
+{id:'c01',name_ko:'해운대 문탠로드',name_en:'Moontan Road',area_ko:'해운대',area_en:'Haeundae',distance:3.2,difficulty:'easy',tags:['no_signal','scenic','beach'],no_signal:true,description_ko:'달맞이고개~송정 해안 산책로. 신호 제로!',description_en:'Coastal trail. Zero signals!',elevation:45,surface_ko:'포장',surface_en:'Paved',emoji:'🌊',color:'#0ea5e9',lat:35.1633,lng:129.1856,route_coords:[{lat:35.1633,lng:129.1856},{lat:35.159,lng:129.192},{lat:35.157,lng:129.198},{lat:35.1588,lng:129.204}]},
+{id:'c02',name_ko:'낙동강 하구 둑길',name_en:'Nakdong River',area_ko:'사하',area_en:'Saha',distance:12,difficulty:'medium',tags:['no_signal','quiet','nature'],no_signal:true,description_ko:'낙동강 하구둑~을숙도. 완전 비신호.',description_en:'Flat estuary trail.',elevation:5,surface_ko:'자전거도로',surface_en:'Bike path',emoji:'🦅',color:'#10b981',lat:35.067,lng:128.943,route_coords:[{lat:35.067,lng:128.943},{lat:35.072,lng:128.95},{lat:35.081,lng:128.955},{lat:35.09,lng:128.948}]},
+{id:'c03',name_ko:'이기대 해안',name_en:'Igidae Coast',area_ko:'남구',area_en:'Nam-gu',distance:5.5,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'오륙도~이기대 절벽 트레일.',description_en:'Cliffside trail.',elevation:180,surface_ko:'비포장+데크',surface_en:'Mixed',emoji:'⛰️',color:'#f59e0b',lat:35.1058,lng:129.1228,route_coords:[{lat:35.1058,lng:129.1228},{lat:35.103,lng:129.118},{lat:35.101,lng:129.112},{lat:35.098,lng:129.107}]},
+{id:'c04',name_ko:'온천천 시민공원',name_en:'Oncheoncheon',area_ko:'동래',area_en:'Dongnae',distance:7,difficulty:'easy',tags:['no_signal','quiet','urban'],no_signal:true,description_ko:'도심 속 신호없는 평지.',description_en:'Flat, no signals.',elevation:10,surface_ko:'우레탄',surface_en:'Urethane',emoji:'🏃',color:'#8b5cf6',lat:35.187,lng:129.063,route_coords:[{lat:35.187,lng:129.063},{lat:35.182,lng:129.06},{lat:35.176,lng:129.058},{lat:35.171,lng:129.056}]},
+{id:'c05',name_ko:'광안리 해변',name_en:'Gwangalli',area_ko:'수영',area_en:'Suyeong',distance:4,difficulty:'easy',tags:['scenic','beach','night'],no_signal:false,description_ko:'광안대교 야경 러닝.',description_en:'Bridge night views.',elevation:3,surface_ko:'포장',surface_en:'Paved',emoji:'🌉',color:'#ec4899',lat:35.1531,lng:129.1187,route_coords:[{lat:35.1531,lng:129.1187},{lat:35.152,lng:129.123},{lat:35.151,lng:129.129},{lat:35.153,lng:129.134}]},
+{id:'c06',name_ko:'태종대 갈맷길',name_en:'Taejongdae',area_ko:'영도',area_en:'Yeongdo',distance:8.5,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'차량통제, 절벽+등대.',description_en:'Vehicle-free loop.',elevation:250,surface_ko:'혼합',surface_en:'Mixed',emoji:'🏝️',color:'#14b8a6',lat:35.052,lng:129.084,route_coords:[{lat:35.052,lng:129.084},{lat:35.049,lng:129.08},{lat:35.046,lng:129.076},{lat:35.05,lng:129.072}]},
+{id:'c07',name_ko:'수영강 리버사이드',name_en:'Suyeong River',area_ko:'수영',area_en:'Suyeong',distance:6,difficulty:'easy',tags:['no_signal','quiet','urban'],no_signal:true,description_ko:'평지, 신호없음.',description_en:'Flat, signal-free.',elevation:5,surface_ko:'자전거도로',surface_en:'Bike',emoji:'🌿',color:'#06b6d4',lat:35.169,lng:129.13,route_coords:[{lat:35.169,lng:129.13},{lat:35.172,lng:129.135},{lat:35.175,lng:129.14},{lat:35.177,lng:129.145}]},
+{id:'c08',name_ko:'장산 숲길',name_en:'Jangsan Forest',area_ko:'해운대',area_en:'Haeundae',distance:9,difficulty:'hard',tags:['no_signal','quiet','trail'],no_signal:true,description_ko:'숲속 트레일.',description_en:'Forest trail.',elevation:350,surface_ko:'비포장',surface_en:'Mountain',emoji:'🌲',color:'#65a30d',lat:35.185,lng:129.168,route_coords:[{lat:35.185,lng:129.168},{lat:35.188,lng:129.172},{lat:35.191,lng:129.175},{lat:35.187,lng:129.179}]},
+{id:'c09',name_ko:'다대포~몰운대',name_en:'Dadaepo Sunset',area_ko:'사하',area_en:'Saha',distance:5,difficulty:'medium',tags:['no_signal','scenic','beach'],no_signal:true,description_ko:'일몰 황금빛 힐링.',description_en:'Golden sunset run.',elevation:60,surface_ko:'포장+데크',surface_en:'Mixed',emoji:'🌅',color:'#f97316',lat:35.047,lng:128.966,route_coords:[{lat:35.047,lng:128.966},{lat:35.045,lng:128.962},{lat:35.043,lng:128.957},{lat:35.046,lng:128.952}]},
+{id:'c10',name_ko:'APEC나루공원',name_en:'APEC Park',area_ko:'해운대',area_en:'Haeundae',distance:2.5,difficulty:'easy',tags:['quiet','urban','night'],no_signal:false,description_ko:'야경 가벼운 코스.',description_en:'Night views.',elevation:2,surface_ko:'우레탄',surface_en:'Urethane',emoji:'✨',color:'#a855f7',lat:35.1695,lng:129.1365,route_coords:[{lat:35.1695,lng:129.1365},{lat:35.171,lng:129.138},{lat:35.17,lng:129.14},{lat:35.1685,lng:129.1385}]},
+{id:'c11',name_ko:'금정산성 트레일',name_en:'Geumjeong Trail',area_ko:'금정',area_en:'Geumjeong',distance:11,difficulty:'hard',tags:['no_signal','scenic','trail'],no_signal:true,description_ko:'부산 최고봉 경유.',description_en:'Peak trail.',elevation:520,surface_ko:'비포장',surface_en:'Mountain',emoji:'🏯',color:'#dc2626',lat:35.284,lng:129.068,route_coords:[{lat:35.284,lng:129.068},{lat:35.287,lng:129.065},{lat:35.291,lng:129.062},{lat:35.295,lng:129.06}]},
+{id:'c12',name_ko:'송도 스카이워크',name_en:'Songdo Skywalk',area_ko:'서구',area_en:'Seo-gu',distance:3.8,difficulty:'medium',tags:['scenic','beach'],no_signal:false,description_ko:'바다 위 달리기!',description_en:'Run above sea!',elevation:30,surface_ko:'데크',surface_en:'Deck',emoji:'🌁',color:'#6366f1',lat:35.075,lng:129.019,route_coords:[{lat:35.075,lng:129.019},{lat:35.073,lng:129.016},{lat:35.07,lng:129.014},{lat:35.068,lng:129.012}]}
 ];
 
-// === 렌더 ===
 function render(){
   const a=$('app');
-  if(!S.nickname){a.innerHTML=rLogin();bLogin();return}
-  let h='';
-  if(S.modal==='detail'&&S.selectedCourse) h=rDetail();
-  else if(S.modal==='writeRec') h=rWriteRec();
-  else if(S.modal==='createGroup') h=rCreateGroup();
-  else if(S.tab==='rec') h=rRecTab();
-  else if(S.tab==='run') h=rRunTab();
-  else if(S.tab==='group') h=rGroupTab();
-  else if(S.tab==='my') h=rMyTab();
-  else h=rHome();
-  h+=rTabBar();
-  a.innerHTML=h;
-  bind();
-  if(S.modal==='detail') initDetailMap();
-  if(S.modal==='writeRec') initRecFormMap();
-  if(S.tab==='rec'&&!S.modal) initRecListMaps();
-}
-
-// --- 로그인 ---
-function rLogin(){return`
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#ecfdf5,#e0f2fe 40%,#fdf2f8);padding:24px">
-<div style="background:#fff;border-radius:28px;padding:48px 36px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(5,150,105,.12);text-align:center">
-<div style="font-size:56px;margin-bottom:8px">🏃‍♂️</div>
-<h1 style="font-size:28px;font-weight:900;color:#064e3b;letter-spacing:-1px">${t('appName')}</h1>
-<p style="color:var(--g1);font-size:14px;margin:4px 0 24px;font-weight:500">${t('subtitle')}</p>
-<button id="langBtn" style="margin-bottom:20px;padding:6px 16px;border-radius:20px;background:#f3f4f6;font-size:12px;font-weight:600;color:#374151">${t('langSw')}</button>
-<div style="text-align:left;margin-bottom:8px"><label style="font-size:13px;font-weight:600;color:#374151">${t('enterNick')}</label></div>
-<input id="nickIn" maxlength="12" placeholder="${t('nickPH')}" class="inp">
-<button id="startBtn" style="width:100%;margin-top:16px;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-size:16px;font-weight:700">${t('start')}</button>
-</div></div>`}
-function bLogin(){
-  const lb=$('langBtn');if(lb)lb.onclick=()=>{S.lang=S.lang==='ko'?'en':'ko';render()};
-  const ni=$('nickIn'),sb=$('startBtn');
-  const go=()=>{const v=ni?.value.trim();if(v){S.nickname=v;sl('nick',v);render()}};
-  if(sb)sb.onclick=go;
-  if(ni)ni.onkeydown=e=>{if(e.key==='Enter')go()};
-}
-
-// --- 공통 코스 카드 (공식/추천 공용) ---
-function rCourseCard(c,type,i){
-  const isOff=type==='official';
-  const lk=isOff?gLk(c.id):rLk(c.id);
-  const av=isOff?gAv(c.id):0;
-  const cm=isOff?gCm(c.id):rCm(c.id);
-  const color=c.color||'#059669';
-  const emoji=c.emoji||'📍';
-  return`
-  <div data-open="${type}:${c.id}" class="card fade-up" style="animation-delay:${(i||0)*.05}s;border:${c.no_signal?'2px solid '+color+'20':'2px solid transparent'};cursor:pointer">
-    <div style="display:flex;gap:12px">
-      <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,${color}15,${color}30);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">${emoji}</div>
-      <div style="flex:1;min-width:0">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-          <h3 style="font-size:15px;font-weight:800">${cn(c)}</h3>
-          ${c.no_signal?'<span class="badge badge-green">'+t('noSig')+'</span>':''}
-          ${!isOff?'<span class="badge" style="background:#e0f2fe;color:#0369a1">👤 '+(c.author||'')+'</span>':''}
-        </div>
-        <div style="font-size:11px;color:var(--sub);margin-top:2px">${ca(c)} · ${c.distance}km · ${cs(c)}</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
-          <span style="padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;background:${cdc(c)}18;color:${cdc(c)}">${cdf(c)}</span>
-          ${(c.tags||[]).filter(t=>t!=='no_signal').slice(0,3).map(tg=>`<span style="font-size:10px;color:var(--dim)">#${tl(tg)}</span>`).join('')}
-        </div>
-      </div>
-    </div>
-    <!-- 미니 지도 -->
-    <div id="minimap_${type}_${c.id}" style="width:100%;height:120px;border-radius:12px;background:#e5e7eb;margin-top:12px;overflow:hidden"></div>
-    <div style="display:flex;align-items:center;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6;font-size:11px;color:var(--sub)">
-      ${isOff?`<span>⭐ ${av?av.toFixed(1):'-'}</span>`:''}
-      <span>❤️ ${lk}</span><span>💬 ${cm.length}</span>
-      <span style="margin-left:auto;font-size:10px;color:#d1d5db">▲${c.elevation||0}m</span>
-    </div>
-  </div>`}
-
-// --- 홈(공식코스) ---
-function rHome(){
-  const fc=getFiltered();
-  return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,var(--g1),var(--g2));padding:28px 20px 24px;border-radius:0 0 32px 32px;color:#fff;position:relative;overflow:hidden">
-    <div style="position:absolute;top:-20px;right:-20px;font-size:120px;opacity:.08;transform:rotate(-15deg)">🏃</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1">
-      <div><h1 style="font-size:24px;font-weight:900;letter-spacing:-1px">${t('appName')} 🏃</h1><p style="font-size:12px;opacity:.9;margin-top:4px">${t('subtitle')}</p></div>
-      <div style="display:flex;gap:6px"><button id="langT" style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;font-size:11px;font-weight:600;color:#fff">${t('langSw')}</button><div style="background:rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;font-size:11px;font-weight:600">${S.nickname}</div></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">${[{n:S.courses.length,l:t('total')},{n:S.courses.filter(c=>c.no_signal).length,l:t('noSig')},{n:fc.length,l:t('result')}].map(s=>`<div style="flex:1;background:rgba(255,255,255,.15);border-radius:14px;padding:10px 8px;text-align:center"><div style="font-size:20px;font-weight:800">${s.n}</div><div style="font-size:10px;opacity:.85;margin-top:2px">${s.l}</div></div>`).join('')}</div>
-  </div>
-  <div style="padding:16px 16px 0">
-    <div data-action="toggleSig" style="background:${S.filters.signal==='noSignal'?'linear-gradient(135deg,#dcfce7,#d1fae5)':'#fff'};border-radius:16px;padding:12px 16px;margin-bottom:10px;border:2px solid ${S.filters.signal==='noSignal'?'var(--g1)':'#e5e7eb'};display:flex;align-items:center;justify-content:space-between;cursor:pointer">
-      <div style="display:flex;align-items:center;gap:10px"><span style="font-size:20px">🚫</span><div><div style="font-weight:700;font-size:13px;color:#064e3b">${t('noSigOnly')}</div><div style="font-size:10px;color:var(--sub);margin-top:1px">${t('noSigDesc')}</div></div></div>
-      <div class="toggle-track" style="background:${S.filters.signal==='noSignal'?'var(--g1)':'#d1d5db'}"><div class="toggle-thumb" style="left:${S.filters.signal==='noSignal'?'20px':'2px'}"></div></div>
-    </div>
-    ${rFR(t('diff'),'difficulty',[['all',t('all')],['easy','🟢 '+t('easy')],['medium','🟡 '+t('med')],['hard','🔴 '+t('hard')]])}
-    ${rFR(t('dist'),'distance',[['all',t('all')],['short',t('short')],['mid',t('mid')],['long',t('long')]])}
-    ${rFR(t('vibe'),'vibe',[['all',t('all')],['scenic','🏞️'+t('scenic')],['quiet','🤫'+t('quiet')],['beach','🏖️'+t('beach')],['trail','🥾'+t('trail')],['urban','🏙️'+t('urban')],['night','🌃'+t('night')]])}
-    <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><span style="font-size:11px;color:var(--sub);font-weight:600;line-height:28px">${t('sort')}:</span>${['rec','byRate','byLike','byDist'].map(k=>`<button data-sort="${k}" class="chip ${S.sortBy===k?'on':''}" style="${S.sortBy===k?'background:#064e3b;color:#fff':''}">${t(k)}</button>`).join('')}</div>
-  </div>
-  <div style="padding:14px 16px 0">${fc.length===0?`<div style="text-align:center;padding:48px 0;color:var(--dim)"><div style="font-size:48px;margin-bottom:12px">🔍</div><div style="font-weight:600">${t('noResult')}</div><div style="font-size:13px;margin-top:4px">${t('adjust')}</div></div>`:fc.map((c,i)=>rCourseCard(c,'official',i)).join('')}</div>
-</div>`}
-function rFR(label,key,opts){return`<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap"><span style="font-size:11px;color:var(--sub);font-weight:700;min-width:36px">${label}</span>${opts.map(([k,l])=>`<button data-filter="${key}:${k}" class="chip ${S.filters[key]===k?'on':''}">${l}</button>`).join('')}</div>`}
-function getFiltered(){
-  return S.courses.filter(c=>{
-    if(S.filters.signal==='noSignal'&&!c.no_signal)return false;
-    if(S.filters.difficulty!=='all'&&c.difficulty!==S.filters.difficulty)return false;
-    const d=S.filters.distance;
-    if(d==='short'&&c.distance>5)return false;if(d==='mid'&&(c.distance<=5||c.distance>10))return false;if(d==='long'&&c.distance<=10)return false;
-    if(S.filters.vibe!=='all'&&!(c.tags||[]).includes(S.filters.vibe))return false;
-    return true;
-  }).sort((a,b)=>{
-    if(S.sortBy==='byRate')return gAv(b.id)-gAv(a.id);
-    if(S.sortBy==='byLike')return gLk(b.id)-gLk(a.id);
-    if(S.sortBy==='byDist')return a.distance-b.distance;
-    return((b.no_signal?100:0)+gAv(b.id)*10+gLk(b.id))-((a.no_signal?100:0)+gAv(a.id)*10+gLk(a.id));
-  });
-}
-
-// --- 추천코스 탭 ---
-function rRecTab(){
-  const sorted=S.recSort==='pop'?[...S.recCourses].sort((a,b)=>rLk(b.id)-rLk(a.id)):[...S.recCourses].sort((a,b)=>(b.ts||0)-(a.ts||0));
-  return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,#f97316,#ec4899);padding:20px;border-radius:0 0 28px 28px;color:#fff">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <h2 style="font-size:20px;font-weight:900">${t('recTitle')}</h2>
-      <button data-action="openWriteRec" style="background:rgba(255,255,255,.25);color:#fff;border-radius:12px;padding:6px 14px;font-size:12px;font-weight:700">+ ${t('writeRec')}</button>
-    </div>
-    <p style="font-size:12px;opacity:.85;margin-top:4px">${S.lang==='ko'?'러너들이 직접 추천하는 나만의 코스':'Courses recommended by runners'}</p>
-  </div>
-  <div style="padding:16px">
-    <div style="display:flex;gap:6px;margin-bottom:14px">
-      <button data-recsort="new" class="chip ${S.recSort==='new'?'on':''}">${t('recSortNew')}</button>
-      <button data-recsort="pop" class="chip ${S.recSort==='pop'?'on':''}">${t('recSortPop')}</button>
-    </div>
-    ${sorted.length===0?`<div style="text-align:center;padding:48px 0;color:var(--dim)"><div style="font-size:48px;margin-bottom:12px">📝</div><div style="font-weight:600">${t('noRec')}</div><div style="font-size:13px;margin-top:4px">${t('firstRec')}</div></div>`:sorted.map((c,i)=>rCourseCard(c,'rec',i)).join('')}
-  </div>
-</div>`}
-
-// --- 추천코스 등록 모달 ---
-function rWriteRec(){
-  const tagOpts=['no_signal','scenic','quiet','beach','trail','urban','night'];
-  const diffOpts=[['easy',t('easy')],['medium',t('med')],['hard',t('hard')]];
-  return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,#f97316,#ec4899);padding:20px;border-radius:0 0 28px 28px;color:#fff">
-    <button data-action="closeModal" style="background:rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:8px 16px;font-size:13px;font-weight:700;margin-bottom:10px">${t('back')}</button>
-    <h2 style="font-size:20px;font-weight:900">✍️ ${t('writeRec')}</h2>
-  </div>
-  <div style="padding:16px">
-    <div class="card">
-      <label class="lbl">${t('recName')} *</label>
-      <input id="rf_name" class="inp" placeholder="${S.lang==='ko'?'예: 기장 해안 비밀 코스':'e.g. Hidden coastal path'}" maxlength="30">
-    </div>
-    <div class="card">
-      <label class="lbl">${t('recDesc')} *</label>
-      <textarea id="rf_desc" class="inp" rows="3" placeholder="${S.lang==='ko'?'이 코스의 매력을 알려주세요!':'Tell us what makes this course special!'}" maxlength="300" style="resize:none"></textarea>
-    </div>
-    <div class="card">
-      <label class="lbl">${t('recMapGuide')}</label>
-      <div id="recFormMap" style="width:100%;height:200px;border-radius:12px;background:#e5e7eb;margin-top:6px"></div>
-      <div id="recLatLng" style="font-size:11px;color:var(--dim);margin-top:6px;text-align:center">📍 ${S.recFormLat.toFixed(4)}, ${S.recFormLng.toFixed(4)}</div>
-    </div>
-    <div class="card">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div><label class="lbl">${t('recDist')}</label><input id="rf_dist" type="number" class="inp" placeholder="5.0" step="0.1" min="0.1"></div>
-        <div><label class="lbl">${t('recElev')}</label><input id="rf_elev" type="number" class="inp" placeholder="50" min="0"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
-        <div><label class="lbl">${t('recDiff')}</label>
-          <select id="rf_diff" class="inp">${diffOpts.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}</select>
-        </div>
-        <div><label class="lbl">${t('recSurf')}</label><input id="rf_surf" class="inp" placeholder="${S.lang==='ko'?'포장도로':'Paved'}"></div>
-      </div>
-      <div style="margin-top:12px"><label class="lbl">${t('recTags')}</label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${tagOpts.map(tg=>`<button data-rectag="${tg}" class="chip rec-tag-btn" id="rtag_${tg}">#${tl(tg)}</button>`).join('')}</div>
-      </div>
-    </div>
-    <div class="card" style="display:flex;gap:10px">
-      <div style="flex:1"><label class="lbl">${S.lang==='ko'?'이모지':'Emoji'}</label><input id="rf_emoji" class="inp" placeholder="🏖️" maxlength="2" value="📍"></div>
-      <div style="flex:1"><label class="lbl">${S.lang==='ko'?'테마 색상':'Color'}</label><input id="rf_color" type="color" class="inp" value="#059669" style="height:42px;padding:4px"></div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button data-action="closeModal" style="flex:1;padding:14px;border-radius:14px;background:#f3f4f6;font-weight:700;color:var(--sub);font-size:15px">${t('cancel')}</button>
-      <button data-action="submitRec" style="flex:1;padding:14px;border-radius:14px;background:linear-gradient(135deg,#f97316,#ec4899);color:#fff;font-weight:700;font-size:15px">${t('submit')}</button>
-    </div>
-  </div>
-</div>`}
-
-// --- 코스 상세 (공식/추천 공용) ---
-function rDetail(){
-  const c=S.selectedCourse,isOff=S.selectedType==='official';
-  const lk=isOff?gLk(c.id):rLk(c.id);
-  const il=isOff?iLk(c.id):riLk(c.id);
-  const cm=isOff?gCm(c.id):rCm(c.id);
-  const show=S.showAllCmt?cm:cm.slice(0,5);
-  const color=c.color||'#059669';
-  return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,${color},${color}bb);padding:20px 20px 32px;border-radius:0 0 36px 36px;color:#fff;position:relative;overflow:hidden">
-    <div style="position:absolute;bottom:-30px;right:-10px;font-size:140px;opacity:.1">${c.emoji||'📍'}</div>
-    <button data-action="back" style="background:rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:8px 16px;font-size:13px;font-weight:700;margin-bottom:14px">${t('back')}</button>
-    <div style="position:relative;z-index:1">
-      <div style="font-size:44px;margin-bottom:6px">${c.emoji||'📍'}</div>
-      <h1 style="font-size:24px;font-weight:900;letter-spacing:-1px">${cn(c)}</h1>
-      <p style="font-size:13px;opacity:.9;margin-top:6px">${ca(c)} · ${c.distance}km</p>
-      ${c.no_signal?`<div style="display:inline-block;margin-top:8px;background:rgba(255,255,255,.25);padding:4px 12px;border-radius:16px;font-size:12px;font-weight:700">${t('noSigBadge')}</div>`:''}
-      ${!isOff?`<div style="margin-top:6px;font-size:12px;opacity:.8">👤 ${c.author||''} · ${timeAgo(c.ts||Date.now())}</div>`:''}
-    </div>
-  </div>
-  <div style="padding:16px">
-    <div class="card fade-up"><div id="detailMap" style="width:100%;height:220px;border-radius:14px;background:#e5e7eb"></div></div>
-    <div class="card fade-up" style="animation-delay:.1s">
-      <p style="font-size:14px;color:var(--txt);line-height:1.7">${cd(c)}</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
-        ${[{l:t('diffL'),v:cdf(c),cl:cdc(c)},{l:t('distL'),v:c.distance+'km',cl:'#0ea5e9'},{l:t('elevL'),v:'▲'+(c.elevation||0)+'m',cl:'#f59e0b'},{l:t('surfL'),v:cs(c),cl:'#8b5cf6'}].map(i=>`<div style="background:${i.cl}08;border-radius:12px;padding:10px 12px;border:1px solid ${i.cl}20"><div style="font-size:10px;color:var(--dim);font-weight:600">${i.l}</div><div style="font-size:14px;font-weight:700;color:${i.cl};margin-top:2px">${i.v}</div></div>`).join('')}
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${(c.tags||[]).map(tg=>`<span style="background:#f3f4f6;padding:3px 9px;border-radius:8px;font-size:11px;font-weight:600;color:var(--sub)">#${tl(tg)}</span>`).join('')}</div>
-    </div>
-    <div class="card fade-up" style="animation-delay:.15s;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-      <button data-action="like" style="display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:14px;border:2px solid ${il?'#ef4444':'#e5e7eb'};background:${il?'#fef2f2':'#fff'};font-size:14px;font-weight:700;color:${il?'#ef4444':'var(--sub)'}">${il?'❤️':'🤍'} ${t('like')} ${lk}</button>
-      ${isOff?`<div style="text-align:right"><div style="font-size:11px;color:var(--dim);font-weight:600;margin-bottom:3px">${t('rating')} ${gAv(c.id)?gAv(c.id).toFixed(1):'-'} (${gRc(c.id)}${t('ppl')})</div><div style="display:flex;gap:3px;justify-content:flex-end">${[1,2,3,4,5].map(s=>`<button data-rate="${s}" style="background:none;font-size:22px;padding:0;filter:${s<=gMr(c.id)?'none':'grayscale(1) opacity(.3)'}">⭐</button>`).join('')}</div></div>`:''}
-    </div>
-    <div class="card fade-up" style="animation-delay:.2s">
-      <h3 style="font-size:15px;font-weight:800;margin-bottom:12px">${t('cmtTitle')} ${cm.length}</h3>
-      <div style="display:flex;gap:8px;margin-bottom:14px">
-        <input id="cmtIn" placeholder="${t('cmtPH')}" maxlength="200" class="inp" style="flex:1">
-        <button data-action="comment" style="padding:9px 16px;border-radius:12px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-weight:700;font-size:13px;white-space:nowrap">${t('submit')}</button>
-      </div>
-      ${show.length===0?`<div style="text-align:center;padding:20px 0;color:#d1d5db"><div style="font-size:28px;margin-bottom:6px">💭</div><div style="font-size:12px">${t('firstCmt')}</div></div>`:show.map((cm,i)=>`<div style="padding:10px 0;${i<show.length-1?'border-bottom:1px solid #f3f4f6':''}"><div style="display:flex;justify-content:space-between"><span style="font-size:12px;font-weight:700;color:var(--g1)">${cm.user}</span><span style="font-size:10px;color:#d1d5db">${timeAgo(cm.ts)}</span></div><p style="margin:3px 0 0;font-size:13px;color:var(--txt);line-height:1.5">${cm.text}</p></div>`).join('')}
-      ${cm.length>5&&!S.showAllCmt?`<button data-action="showAll" style="width:100%;padding:8px;margin-top:6px;border-radius:10px;border:1px solid #e5e7eb;background:#f9fafb;color:var(--sub);font-size:12px;font-weight:600">${cm.length-5}${t('more')}</button>`:''}
-    </div>
-  </div>
-</div>`}
-
-// --- 러닝 탭 ---
-function rRunTab(){
-  const active=S.gpsState==='running'||S.gpsState==='paused',running=S.gpsState==='running';
-  const allC=[...S.courses,...S.recCourses];
-  return`<div style="padding-bottom:${active?'200px':'80px'}">
-  <div style="background:linear-gradient(135deg,#064e3b,#059669);padding:20px;border-radius:0 0 28px 28px;color:#fff"><h2 style="font-size:20px;font-weight:900">${t('tabRun')} 🏃</h2></div>
-  <div style="padding:16px">${!active?`
-    <div class="card" style="text-align:center;padding:32px 20px">
-      <div style="font-size:48px;margin-bottom:12px">🏃‍♂️</div>
-      <p style="font-size:14px;color:var(--sub);margin-bottom:20px">${t('selCourse')}</p>
-      <select id="runSel" class="inp" style="margin-bottom:16px"><option value="">-- ${t('selCourse')} --</option>
-        <optgroup label="${S.lang==='ko'?'공식 코스':'Official'}">${S.courses.map(c=>`<option value="official:${c.id}">${cn(c)} (${c.distance}km)</option>`).join('')}</optgroup>
-        ${S.recCourses.length?`<optgroup label="${S.lang==='ko'?'추천 코스':'Picks'}">${S.recCourses.map(c=>`<option value="rec:${c.id}">${cn(c)} (${c.distance}km)</option>`).join('')}</optgroup>`:''}
-      </select>
-      <button data-action="startRun" style="width:100%;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--g1),#064e3b);color:#fff;font-size:16px;font-weight:800">${t('startRun')}</button>
-    </div>`:`<div class="card" style="padding:0;overflow:hidden;border-radius:20px"><div id="gpsMap" style="width:100%;height:250px;background:#e5e7eb"></div></div>`}
-  </div>
-  ${active?`<div class="gps-panel">
-    <div style="display:flex;gap:8px;margin-bottom:14px">
-      <div class="gps-stat"><div class="val">${(S.gpsDist/1000).toFixed(2)}</div><div class="lbl">${t('distKm')}</div></div>
-      <div class="gps-stat"><div class="val">${fmtTime(S.gpsElapsed)}</div><div class="lbl">${t('time')}</div></div>
-      <div class="gps-stat"><div class="val">${fmtPace(S.gpsDist/1000,S.gpsElapsed)}</div><div class="lbl">${t('pace')}</div></div>
-    </div>
-    <div style="display:flex;gap:8px">
-      ${running?`<button data-action="pauseRun" style="flex:1;padding:12px;border-radius:12px;background:#f59e0b;color:#fff;font-weight:700">${t('pause')}</button>`:`<button data-action="resumeRun" style="flex:1;padding:12px;border-radius:12px;background:var(--g1);color:#fff;font-weight:700">${t('resume')}</button>`}
-      <button data-action="stopRun" style="flex:1;padding:12px;border-radius:12px;background:#ef4444;color:#fff;font-weight:700">${t('stop')}</button>
-    </div>
-  </div>`:''}
-</div>`}
-
-// --- 같이달려요 탭 ---
-function rGroupTab(){return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,#7c3aed,#ec4899);padding:20px;border-radius:0 0 28px 28px;color:#fff">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:20px;font-weight:900">${t('grTitle')}</h2><button data-action="openCG" style="background:rgba(255,255,255,.25);color:#fff;border-radius:12px;padding:6px 14px;font-size:12px;font-weight:700">+ ${t('createGr')}</button></div>
-  </div>
-  <div style="padding:16px">${S.groupRuns.length===0?`<div style="text-align:center;padding:48px 0;color:var(--dim)"><div style="font-size:48px;margin-bottom:12px">🤝</div><div style="font-weight:600">${S.lang==='ko'?'아직 모임이 없어요':'No group runs yet'}</div></div>`:S.groupRuns.map((g,i)=>{
-    const c=[...S.courses,...S.recCourses].find(x=>x.id===g.course_id);
-    const mb=g.members||[];const jd=mb.some(m=>m.nickname===S.nickname);
-    const d=new Date(g.run_date),ds=`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-    return`<div class="card fade-up" style="animation-delay:${i*.05}s">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start"><div><h3 style="font-size:15px;font-weight:800">${g.title||'--'}</h3><div style="font-size:12px;color:var(--sub);margin-top:3px">${c?cn(c)+' · '+c.distance+'km':''}</div></div><div style="text-align:right"><div style="font-size:11px;color:var(--sub)">${ds}</div><div style="font-size:11px;color:var(--dim);margin-top:2px">${mb.length}/${g.max_members}${t('members')}</div></div></div>
-      ${g.description?`<p style="font-size:12px;color:var(--txt);margin-top:8px;line-height:1.5">${g.description}</p>`:''}
-      <div style="display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap">${g.pace?`<span class="badge" style="background:#e0f2fe;color:#0369a1">${t('paceL')}: ${g.pace}</span>`:''} ${mb.map(m=>`<span style="background:#f3f4f6;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600;color:var(--sub)">${m.nickname}</span>`).join('')}</div>
-      <button data-ga="${jd?'leave':'join'}:${g.id}" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;background:${jd?'#fef2f2':'linear-gradient(135deg,#7c3aed,#ec4899)'};color:${jd?'#ef4444':'#fff'};font-weight:700;font-size:13px;border:${jd?'1px solid #fecaca':'none'}">${jd?t('leave'):t('join')}</button>
-    </div>`}).join('')}</div>
-</div>`}
-
-// --- 그룹 생성 모달 ---
-function rCreateGroup(){
-  const allC=[...S.courses,...S.recCourses];
-  return`<div style="padding-bottom:80px"><div style="background:linear-gradient(135deg,#7c3aed,#ec4899);padding:20px;border-radius:0 0 28px 28px;color:#fff">
-  <button data-action="closeModal" style="background:rgba(255,255,255,.2);color:#fff;border-radius:12px;padding:8px 16px;font-size:13px;font-weight:700;margin-bottom:10px">${t('back')}</button>
-  <h2 style="font-size:20px;font-weight:900">🤝 ${t('createGr')}</h2></div>
-  <div style="padding:16px"><div class="card" style="display:flex;flex-direction:column;gap:12px">
-    <div><label class="lbl">${S.lang==='ko'?'코스 선택':'Course'}</label><select id="grC" class="inp">${allC.map(c=>`<option value="${c.id}">${cn(c)} (${c.distance}km)</option>`).join('')}</select></div>
-    <div><label class="lbl">${t('grTitleIn')}</label><input id="grT" class="inp" placeholder="${S.lang==='ko'?'예: 주말 아침 가볍게!':'e.g. Easy Sunday!'}"></div>
-    <div><label class="lbl">${t('runDate')}</label><input id="grD" type="datetime-local" class="inp"></div>
-    <div style="display:flex;gap:10px"><div style="flex:1"><label class="lbl">${t('maxM')}</label><input id="grM" type="number" value="10" min="2" max="50" class="inp"></div><div style="flex:1"><label class="lbl">${t('paceL')}</label><input id="grP" class="inp" placeholder="5:30~6:00"></div></div>
-    <div><label class="lbl">${t('grDesc')}</label><textarea id="grDe" rows="2" class="inp" style="resize:none" placeholder="${S.lang==='ko'?'자유롭게':'Describe'}"></textarea></div>
-    <div style="display:flex;gap:8px"><button data-action="closeModal" style="flex:1;padding:12px;border-radius:12px;background:#f3f4f6;font-weight:700;color:var(--sub)">${t('cancel')}</button><button data-action="submitGr" style="flex:1;padding:12px;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;font-weight:700">${t('create')}</button></div>
-  </div></div></div>`}
-
-// --- MY 탭 ---
-function rMyTab(){return`<div style="padding-bottom:80px">
-  <div style="background:linear-gradient(135deg,#064e3b,var(--g1));padding:20px;border-radius:0 0 28px 28px;color:#fff">
-    <h2 style="font-size:20px;font-weight:900">MY 🏅</h2>
-    <div style="background:rgba(255,255,255,.15);border-radius:14px;padding:14px;margin-top:14px;display:flex;gap:12px">
-      <div style="flex:1;text-align:center"><div style="font-size:20px;font-weight:800">${S.myRecords.length}</div><div style="font-size:10px;opacity:.8;margin-top:2px">${S.lang==='ko'?'러닝':'Runs'}</div></div>
-      <div style="flex:1;text-align:center"><div style="font-size:20px;font-weight:800">${S.myRecords.reduce((s,r)=>s+(r.distance||0),0).toFixed(1)}</div><div style="font-size:10px;opacity:.8;margin-top:2px">km</div></div>
-      <div style="flex:1;text-align:center"><div style="font-size:20px;font-weight:800">${S.nickname}</div><div style="font-size:10px;opacity:.8;margin-top:2px">${S.lang==='ko'?'닉네임':'Name'}</div></div>
-    </div>
-  </div>
-  <div style="padding:16px">
-    <h3 style="font-size:15px;font-weight:800;margin-bottom:12px">${S.lang==='ko'?'최근 러닝 기록':'Recent Runs'}</h3>
-    ${S.myRecords.length===0?`<div class="card" style="text-align:center;color:var(--dim);padding:32px"><div style="font-size:36px;margin-bottom:8px">🏅</div><div style="font-size:13px">${S.lang==='ko'?'아직 기록이 없어요':'No records yet'}</div></div>`:S.myRecords.map(r=>{const c=[...S.courses,...S.recCourses].find(x=>x.id===r.course_id);return`<div class="card"><div style="display:flex;justify-content:space-between"><span style="font-weight:700;font-size:14px">${c?cn(c):'--'}</span><span style="font-size:11px;color:var(--dim)">${new Date(r.ts||Date.now()).toLocaleDateString()}</span></div><div style="display:flex;gap:16px;margin-top:8px;font-size:13px;color:var(--sub)"><span>📏 ${(r.distance||0).toFixed(2)}km</span><span>⏱️ ${fmtTime(r.duration||0)}</span><span>⚡ ${r.avg_pace||'--'}</span></div></div>`}).join('')}
-  </div>
-  <div style="text-align:center;padding:24px 16px;font-size:11px;color:var(--dim)"><div style="font-weight:600">${t('ver')}</div><div style="margin-top:3px">🏃 ${t('footer')}</div></div>
-</div>`}
-
-// --- 탭바 ---
-function rTabBar(){return`<div class="tab-bar">${[{k:'home',i:'🏠',l:t('tabHome')},{k:'rec',i:'📝',l:t('tabRec')},{k:'run',i:'🏃',l:t('tabRun')},{k:'group',i:'🤝',l:t('tabGroup')},{k:'my',i:'👤',l:t('tabMy')}].map(tb=>`<button data-tab="${tb.k}" class="${S.tab===tb.k?'active':''}"><span class="icon">${tb.i}</span>${tb.l}</button>`).join('')}</div>`}
-
-// === 이벤트 ===
-let recSelectedTags=[];
-function bind(){
-  // 탭
-  document.querySelectorAll('[data-tab]').forEach(el=>el.onclick=()=>{S.tab=el.dataset.tab;S.modal=null;S.selectedCourse=null;S.showAllCmt=false;render()});
-  // 언어
-  const lt=$('langT');if(lt)lt.onclick=()=>{S.lang=S.lang==='ko'?'en':'ko';render()};
-  // 필터
-  document.querySelectorAll('[data-action="toggleSig"]').forEach(el=>el.onclick=()=>{S.filters.signal=S.filters.signal==='noSignal'?'all':'noSignal';render()});
-  document.querySelectorAll('[data-filter]').forEach(el=>el.onclick=()=>{const[k,v]=el.dataset.filter.split(':');S.filters[k]=v;render()});
-  document.querySelectorAll('[data-sort]').forEach(el=>el.onclick=()=>{S.sortBy=el.dataset.sort;render()});
-  document.querySelectorAll('[data-recsort]').forEach(el=>el.onclick=()=>{S.recSort=el.dataset.recsort;render()});
-  // 코스 열기
-  document.querySelectorAll('[data-open]').forEach(el=>el.onclick=()=>{
-    const[type,id]=el.dataset.open.split(':');
-    S.selectedType=type;
-    S.selectedCourse=type==='official'?S.courses.find(c=>c.id===id):S.recCourses.find(c=>c.id===id);
-    S.modal='detail';S.showAllCmt=false;render();
-  });
-  // 뒤로/닫기
-  document.querySelectorAll('[data-action="back"],[data-action="closeModal"]').forEach(el=>el.onclick=()=>{S.modal=null;S.selectedCourse=null;render()});
-  // 좋아요
-  document.querySelectorAll('[data-action="like"]').forEach(el=>el.onclick=()=>{
-    if(!S.selectedCourse)return;const id=S.selectedCourse.id,k=id+':'+S.nickname;
-    if(S.selectedType==='official'){if(S.likes[k])delete S.likes[k];else S.likes[k]=true;sl('likes',S.likes)}
-    else{if(S.recLikes[k])delete S.recLikes[k];else S.recLikes[k]=true;sl('rlikes',S.recLikes)}
-    render();
-  });
-  // 별점
-  document.querySelectorAll('[data-rate]').forEach(el=>el.onclick=()=>{if(!S.selectedCourse)return;S.ratings[S.selectedCourse.id+':'+S.nickname]=+el.dataset.rate;sl('ratings',S.ratings);render()});
-  // 댓글
-  document.querySelectorAll('[data-action="comment"]').forEach(el=>el.onclick=()=>{
-    const inp=$('cmtIn');if(!inp||!inp.value.trim()||!S.selectedCourse)return;
-    const id=S.selectedCourse.id,cm={id:uid(),user:S.nickname,text:inp.value.trim(),ts:Date.now()};
-    if(S.selectedType==='official'){if(!S.comments[id])S.comments[id]=[];S.comments[id].push(cm);sl('comments',S.comments)}
-    else{if(!S.recComments[id])S.recComments[id]=[];S.recComments[id].push(cm);sl('rcomments',S.recComments)}
-    render();
-  });
-  document.querySelectorAll('[data-action="showAll"]').forEach(el=>el.onclick=()=>{S.showAllCmt=true;render()});
-  // 추천코스 등록
-  document.querySelectorAll('[data-action="openWriteRec"]').forEach(el=>el.onclick=()=>{S.modal='writeRec';recSelectedTags=[];render()});
-  document.querySelectorAll('[data-rectag]').forEach(el=>{
-    const tg=el.dataset.rectag;
-    if(recSelectedTags.includes(tg))el.classList.add('on');
-    el.onclick=()=>{if(recSelectedTags.includes(tg))recSelectedTags=recSelectedTags.filter(x=>x!==tg);else recSelectedTags.push(tg);el.classList.toggle('on')};
-  });
-  document.querySelectorAll('[data-action="submitRec"]').forEach(el=>el.onclick=submitRecCourse);
-  // GPS
-  document.querySelectorAll('[data-action="startRun"]').forEach(el=>el.onclick=startGps);
-  document.querySelectorAll('[data-action="pauseRun"]').forEach(el=>el.onclick=()=>{S.gpsState='paused';render()});
-  document.querySelectorAll('[data-action="resumeRun"]').forEach(el=>el.onclick=()=>{S.gpsState='running';render()});
-  document.querySelectorAll('[data-action="stopRun"]').forEach(el=>el.onclick=stopGps);
-  // 그룹
-  document.querySelectorAll('[data-action="openCG"]').forEach(el=>el.onclick=()=>{S.modal='createGroup';render()});
-  document.querySelectorAll('[data-action="submitGr"]').forEach(el=>el.onclick=submitGroup);
-  document.querySelectorAll('[data-ga]').forEach(el=>el.onclick=()=>{
-    const[act,gid]=el.dataset.ga.split(':');const g=S.groupRuns.find(x=>x.id===gid);if(!g)return;if(!g.members)g.members=[];
-    if(act==='join'){if(!g.members.find(m=>m.nickname===S.nickname))g.members.push({nickname:S.nickname})}
-    else g.members=g.members.filter(m=>m.nickname!==S.nickname);
-    sl('groups',S.groupRuns);render();
-  });
-}
-
-function submitRecCourse(){
-  const name=$('rf_name')?.value.trim(),desc=$('rf_desc')?.value.trim();
-  const dist=parseFloat($('rf_dist')?.value)||0,elev=parseInt($('rf_elev')?.value)||0;
-  const diff=$('rf_diff')?.value||'easy',surf=$('rf_surf')?.value.trim()||'';
-  const emoji=$('rf_emoji')?.value||'📍',color=$('rf_color')?.value||'#059669';
-  if(!name||!desc){alert(S.lang==='ko'?'이름과 설명을 입력하세요':'Enter name and description');return}
-  if(!dist){alert(S.lang==='ko'?'거리를 입력하세요':'Enter distance');return}
-  const c={
-    id:'r_'+uid(),name:name,name_ko:name,name_en:name,
-    area:S.lang==='ko'?'추천코스':'User Pick',area_ko:'추천코스',area_en:'User Pick',
-    desc:desc,description_ko:desc,description_en:desc,
-    distance:dist,elevation:elev,difficulty:diff,
-    surface:surf,surface_ko:surf,surface_en:surf,
-    tags:recSelectedTags.length?recSelectedTags:['scenic'],
-    no_signal:recSelectedTags.includes('no_signal'),
-    emoji,color,lat:S.recFormLat,lng:S.recFormLng,
-    route_coords:[{lat:S.recFormLat,lng:S.recFormLng}],
-    author:S.nickname,ts:Date.now()
-  };
-  S.recCourses.push(c);sl('recs',S.recCourses);
-  S.modal=null;S.tab='rec';render();
-}
-
-function submitGroup(){
-  const cid=$('grC')?.value,title=$('grT')?.value,date=$('grD')?.value;
-  const max=+($('grM')?.value||10),pace=$('grP')?.value,desc=$('grDe')?.value;
-  if(!cid||!date){alert(S.lang==='ko'?'코스와 날짜를 입력하세요':'Select course and date');return}
-  const c=[...S.courses,...S.recCourses].find(x=>x.id===cid);
-  S.groupRuns.push({id:uid(),course_id:cid,title:title||cn(c),description:desc,run_date:date,max_members:max,pace,host_nickname:S.nickname,members:[{nickname:S.nickname}]});
-  sl('groups',S.groupRuns);S.modal=null;render();
-}
-
-// === GPS ===
-function startGps(){
-  const sel=$('runSel');if(!sel||!sel.value){alert(t('selCourse'));return}
-  const[type,id]=sel.value.split(':');
-  S.selectedCourse=type==='official'?S.courses.find(c=>c.id===id):S.recCourses.find(c=>c.id===id);
-  S.selectedType=type;
-  if(!navigator.geolocation){alert('GPS not supported');return}
-  S.gpsState='waiting';S.gpsCoords=[];S.gpsDist=0;S.gpsElapsed=0;
-  S.gpsWatch=navigator.geolocation.watchPosition(pos=>{
-    const p={lat:pos.coords.latitude,lng:pos.coords.longitude,ts:Date.now()};
-    if(S.gpsState==='waiting')S.gpsState='running';
-    if(S.gpsState==='running'){if(S.gpsCoords.length>0)S.gpsDist+=calcDist(S.gpsCoords[S.gpsCoords.length-1],p);S.gpsCoords.push(p)}
-    render();
-  },e=>console.error('GPS:',e),{enableHighAccuracy:true,maximumAge:3000,timeout:10000});
-  S.gpsTimer=setInterval(()=>{if(S.gpsState==='running'){S.gpsElapsed++;render()}},1000);
-  render();
-}
-function stopGps(){
-  if(S.gpsWatch)navigator.geolocation.clearWatch(S.gpsWatch);
-  if(S.gpsTimer)clearInterval(S.gpsTimer);
-  S.myRecords.unshift({course_id:S.selectedCourse?.id||'',distance:+(S.gpsDist/1000).toFixed(3),duration:S.gpsElapsed,avg_pace:fmtPace(S.gpsDist/1000,S.gpsElapsed),route:S.gpsCoords,ts:Date.now()});
-  sl('records',S.myRecords);S.gpsState='idle';S.gpsWatch=null;S.gpsTimer=null;S.tab='my';render();
-}
-
-// === 카카오맵 ===
-function hasKakao(){return typeof kakao!=='undefined'&&kakao.maps}
-function mapPlaceholder(el,msg){if(el)el.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:12px;font-weight:600;text-align:center;padding:16px">🗺️ ${msg||'카카오맵 API 키 설정 후 지도가 표시됩니다'}</div>`}
-
-function initDetailMap(){
-  const el=$('detailMap');if(!el)return;
-  const c=S.selectedCourse;if(!c)return;
-  if(!hasKakao()){mapPlaceholder(el);return}
-  const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(c.lat,c.lng),level:5});
-  new kakao.maps.Marker({map,position:new kakao.maps.LatLng(c.lat,c.lng)});
-  if(c.route_coords&&c.route_coords.length>1){
-    const path=c.route_coords.map(p=>new kakao.maps.LatLng(p.lat,p.lng));
-    new kakao.maps.Polyline({map,path,strokeWeight:4,strokeColor:c.color||'#059669',strokeOpacity:.8,strokeStyle:'solid'});
-  }
-}
-
-function initRecFormMap(){
-  const el=$('recFormMap');if(!el)return;
-  if(!hasKakao()){mapPlaceholder(el,S.lang==='ko'?'API 키 설정 후 지도에서 위치를 선택할 수 있습니다':'Set API key to pick location on map');return}
-  const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),level:7});
-  let marker=new kakao.maps.Marker({map,position:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),draggable:true});
-  kakao.maps.event.addListener(map,'click',function(e){
-    S.recFormLat=e.latLng.getLat();S.recFormLng=e.latLng.getLng();
-    marker.setPosition(e.latLng);
-    const ll=$('recLatLng');if(ll)ll.textContent='📍 '+S.recFormLat.toFixed(4)+', '+S.recFormLng.toFixed(4);
-  });
-  kakao.maps.event.addListener(marker,'dragend',function(){
-    const p=marker.getPosition();S.recFormLat=p.getLat();S.recFormLng=p.getLng();
-    const ll=$('recLatLng');if(ll)ll.textContent='📍 '+S.recFormLat.toFixed(4)+', '+S.recFormLng.toFixed(4);
-  });
-}
-
-function initRecListMaps(){
-  if(!hasKakao())return;
-  S.recCourses.forEach(c=>{
-    const el=$('minimap_rec_'+c.id);if(!el||el.dataset.init)return;
-    el.dataset.init='1';
-    const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(c.lat,c.lng),level:6,draggable:false,zoomable:false});
-    new kakao.maps.Marker({map,position:new kakao.maps.LatLng(c.lat,c.lng)});
-    if(c.route_coords&&c.route_coords.length>1){
-      const path=c.route_coords.map(p=>new kakao.maps.LatLng(p.lat,p.lng));
-      new kakao.maps.Polyline({map,path,strokeWeight:3,strokeColor:c.color||'#059669',strokeOpacity:.7,strokeStyle:'solid'});
-    }
-  });
-  // 공식 코스 미니맵도
-  getFiltered().forEach(c=>{
-    const el=$('minimap_official_'+c.id);if(!el||el.dataset.init)return;
-    el.dataset.init='1';
-    const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(c.lat,c.lng),level:6,draggable:false,zoomable:false});
-    new kakao.maps.Marker({map,position:new kakao.maps.LatLng(c.lat,c.lng)});
-    if(c.route_coords&&c.route_coords.length>1){
-      const path=c.route_coords.map(p=>new kakao.maps.LatLng(p.lat,p.lng));
-      new kakao.maps.Polyline({map,path,strokeWeight:3,strokeColor:c.color||'#059669',strokeOpacity:.7,strokeStyle:'solid'});
-    }
-  });
-}
-
-// 홈 탭에서도 미니맵 초기화
-const origBind=bind;
-bind=function(){
-  origBind.call?origBind():null;
-  // 실제 bind는 위에서 정의됨
-};
-// 렌더 후 미니맵 초기화
-const origRender=render;
-render=function(){
-  const a=$('app');
-  if(!S.nickname){a.innerHTML=rLogin();bLogin();return}
+  if(S.showSplash){a.innerHTML=rSplash()+(S.showNickPopup?rNickPopup():'');bSplash();return}
+  if(!S.nickname){S.showSplash=true;S.showNickPopup=true;render();return}
   let h='';
   if(S.modal==='detail'&&S.selectedCourse)h=rDetail();
   else if(S.modal==='writeRec')h=rWriteRec();
@@ -669,26 +186,274 @@ render=function(){
   else if(S.tab==='group')h=rGroupTab();
   else if(S.tab==='my')h=rMyTab();
   else h=rHome();
-  h+=rTabBar();
-  a.innerHTML=h;
-  bind();
+  h+=rTabBar();a.innerHTML=h;bind();
   if(S.modal==='detail')initDetailMap();
   if(S.modal==='writeRec')initRecFormMap();
-  // 미니맵 지연 초기화
-  setTimeout(()=>{
-    if(S.tab==='home'&&!S.modal)initRecListMaps();
-    if(S.tab==='rec'&&!S.modal)initRecListMaps();
-  },100);
-};
+}
 
-// === 초기화 ===
+// --- 대문 (심플 일러스트) ---
+function rSplash(){
+  const bldgs=[60,90,45,110,70,55,95,40,80,65,50,100,75,85];
+  return`<div class="splash fade-in" id="splashArea">
+  <div class="splash-city">${bldgs.map(h=>`<div class="splash-bldg" style="width:${12+Math.random()*20}px;height:${h}px"></div>`).join('')}</div>
+  <div class="splash-runner">🏃‍♂️</div>
+  <h1>${t('splash1')}</h1>
+  <p>${t('splashSub')}</p>
+  <div class="splash-hint">${t('splashHint')}</div>
+</div>`}
+
+function rNickPopup(){return`
+<div class="nick-overlay" id="nickOverlay">
+  <div class="nick-popup">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:6px">🏃</div>
+      <h2 style="font-size:20px;font-weight:900;color:#1a1a1a">${t('nickTitle')}</h2>
+    </div>
+    <input id="nickIn" maxlength="12" placeholder="${t('nickPH')}" class="inp" style="text-align:center;font-size:18px;padding:14px;border-radius:16px">
+    <button id="nickGo" style="width:100%;margin-top:14px;padding:14px;border-radius:50px;background:linear-gradient(135deg,var(--g1),#1b5e20);color:#fff;font-size:16px;font-weight:800">${t('enter')}</button>
+    <button id="langB" style="display:block;margin:12px auto 0;padding:4px 14px;border-radius:12px;background:#f3f4f6;font-size:11px;font-weight:600;color:#374151">${t('langSw')}</button>
+  </div>
+</div>`}
+
+function bSplash(){
+  const sa=$('splashArea');if(sa)sa.onclick=()=>{if(S.nickname){S.showSplash=false;render();ensureProfile().then(()=>loadFromServer())}else if(!S.showNickPopup){S.showNickPopup=true;render()}};
+  const lb=$('langB');if(lb)lb.onclick=(e)=>{e.stopPropagation();S.lang=S.lang==='ko'?'en':'ko';render()};
+  const go=async()=>{const v=$('nickIn')?.value.trim();if(v){S.nickname=v;sl('nick',v);S.showSplash=false;S.showNickPopup=false;render();await ensureProfile();await loadFromServer()}};
+  const gb=$('nickGo');if(gb)gb.onclick=go;
+  const ni=$('nickIn');if(ni){ni.onclick=e=>e.stopPropagation();ni.onkeydown=e=>{if(e.key==='Enter')go()}}
+  const ov=$('nickOverlay');if(ov)ov.onclick=e=>{if(e.target===ov){S.showNickPopup=false;render()}}
+}
+
+// --- 홈 ---
+function rHome(){
+  const fc=S.noSigFilter?S.courses.filter(c=>c.no_signal):S.courses;
+  return`<div style="padding-bottom:72px">
+  <div style="padding:16px 14px 10px;display:flex;justify-content:space-between;align-items:center">
+    <h1 style="font-size:22px;font-weight:900;letter-spacing:-1px">${t('app')}</h1>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button id="langT" style="padding:4px 10px;border-radius:10px;background:#f3f4f6;font-size:10px;font-weight:600">${t('langSw')}</button>
+      <div style="padding:4px 10px;border-radius:10px;background:#ecfdf5;font-size:10px;font-weight:700;color:var(--g1)">${S.nickname}</div>
+    </div>
+  </div>
+  <div style="padding:0 12px 10px">
+    <div data-action="toggleSig" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:14px;background:${S.noSigFilter?'#ecfdf5':'#fff'};border:1.5px solid ${S.noSigFilter?'var(--g1)':'#e5e7eb'};cursor:pointer">
+      <div style="display:flex;align-items:center;gap:8px"><div class="signal sig-green"></div><span style="font-size:13px;font-weight:700;color:#1b5e20">${t('noSigOnly')}</span></div>
+      <div style="width:40px;height:24px;border-radius:12px;background:${S.noSigFilter?'var(--g1)':'#d1d5db'};position:relative;transition:background .2s"><div style="width:20px;height:20px;border-radius:10px;background:#fff;position:absolute;top:2px;left:${S.noSigFilter?'18px':'2px'};transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>
+    </div>
+  </div>
+  <!-- 신호등 범례 -->
+  <div style="display:flex;gap:12px;padding:0 14px 10px;font-size:10px;color:var(--sub)">
+    <span style="display:flex;align-items:center;gap:3px"><div class="signal sig-green" style="width:12px;height:12px;font-size:0"></div>${t('sigG')}</span>
+    <span style="display:flex;align-items:center;gap:3px"><div class="signal sig-yellow" style="width:12px;height:12px;font-size:0"></div>${t('sigY')}</span>
+    <span style="display:flex;align-items:center;gap:3px"><div class="signal sig-red" style="width:12px;height:12px;font-size:0"></div>${t('sigR')}</span>
+  </div>
+  <div class="grid">${fc.map((c,i)=>rSq(c,'official',i)).join('')}</div>
+</div>`}
+
+function rSq(c,type,i){
+  const lk=type==='official'?gLk(c.id):rLk(c.id);
+  const cm=type==='official'?gCm(c.id):rCm(c.id);
+  return`
+  <div data-open="${type}:${c.id}" class="sq scale-in" style="animation-delay:${(i||0)*.04}s">
+    <div class="sq-top" style="background:linear-gradient(135deg,${c.color||'#059669'}08,${c.color||'#059669'}20)">${c.emoji||'📍'}</div>
+    <div class="sq-sig"><div class="signal ${sigClass(c)}"></div></div>
+    <div class="sq-bot">
+      <div class="sq-name">${cn(c)}</div>
+      <div class="sq-info">${ca(c)} · ${c.distance}km</div>
+      <div class="sq-stats"><span>❤️${lk}</span><span>💬${cm.length}</span>${type!=='official'?'<span style="font-size:9px">👤'+(c.author||'')+'</span>':''}</div>
+    </div>
+  </div>`}
+
+// --- 추천코스 ---
+function rRecTab(){
+  const sorted=[...S.recCourses].sort((a,b)=>(b.ts||0)-(a.ts||0));
+  return`<div style="padding-bottom:72px">
+  <div style="padding:16px 14px 10px;display:flex;justify-content:space-between;align-items:center">
+    <h1 style="font-size:22px;font-weight:900">${t('recTitle')}</h1>
+    <button data-action="openWriteRec" style="padding:8px 14px;border-radius:12px;background:var(--g1);color:#fff;font-size:12px;font-weight:700">+ ${t('writeRec')}</button>
+  </div>
+  ${sorted.length===0?`<div style="text-align:center;padding:60px 0;color:var(--dim)"><div style="font-size:40px;margin-bottom:10px">📝</div><div style="font-size:13px">${t('noRec')}</div></div>`:
+  `<div class="grid">${sorted.map((c,i)=>rSq(c,'rec',i)).join('')}</div>`}
+</div>`}
+
+// --- 상세 ---
+function rDetail(){
+  const c=S.selectedCourse,isOff=S.selectedType==='official';
+  const lk=isOff?gLk(c.id):rLk(c.id),il=isOff?iLk(c.id):riLk(c.id);
+  const cm=isOff?gCm(c.id):rCm(c.id),show=S.showAllCmt?cm:cm.slice(0,5);
+  return`<div style="padding-bottom:72px">
+  <div class="detail-hero" style="background:linear-gradient(135deg,${c.color||'#059669'},${c.color||'#059669'}bb)">
+    <div style="position:relative;z-index:1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <button data-action="back" style="background:rgba(255,255,255,.2);color:#fff;border-radius:10px;padding:6px 14px;font-size:13px;font-weight:700">${t('back')}</button>
+        <div class="signal ${sigClass(c)}" style="width:28px;height:28px;font-size:0;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>
+      </div>
+      <div style="font-size:40px;margin-bottom:4px">${c.emoji||'📍'}</div>
+      <h1 style="font-size:22px;font-weight:900;color:#fff">${cn(c)}</h1>
+      <p style="font-size:12px;color:rgba(255,255,255,.8);margin-top:4px">${ca(c)} · ${c.distance}km · ${cdf(c)}</p>
+    </div>
+  </div>
+  <div style="padding:12px">
+    <div class="card"><div id="detailMap" style="width:100%;height:200px;border-radius:12px;background:#e5e7eb"></div></div>
+    <div class="card"><p style="font-size:14px;line-height:1.7">${cd(c)}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px">${(c.tags||[]).map(tg=>`<span style="background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;color:var(--sub)">#${tl(tg)}</span>`).join('')}</div>
+    </div>
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <button data-action="like" style="display:flex;align-items:center;gap:5px;padding:8px 16px;border-radius:12px;border:1.5px solid ${il?'#ef4444':'#e5e7eb'};background:${il?'#fef2f2':'#fff'};font-size:14px;font-weight:700;color:${il?'#ef4444':'var(--sub)'}">${il?'❤️':'🤍'} ${lk}</button>
+      ${isOff?`<div style="display:flex;gap:2px">${[1,2,3,4,5].map(s=>`<button data-rate="${s}" style="background:none;font-size:20px;padding:0;filter:${s<=gMr(c.id)?'none':'grayscale(1) opacity(.3)'}">⭐</button>`).join('')}</div>`:''}
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:800;margin-bottom:10px">${t('cmt')} ${cm.length}</div>
+      <div style="display:flex;gap:6px;margin-bottom:12px"><input id="cmtIn" placeholder="${t('cmtPH')}" maxlength="200" class="inp" style="flex:1"><button data-action="comment" style="padding:8px 14px;border-radius:12px;background:var(--g1);color:#fff;font-weight:700;font-size:13px;white-space:nowrap">${t('post')}</button></div>
+      ${show.length===0?`<div style="text-align:center;padding:14px 0;color:#d1d5db;font-size:12px">${t('firstCmt')}</div>`:show.map((cm,i)=>`<div style="padding:8px 0;${i<show.length-1?'border-bottom:1px solid #f3f4f6':''}"><div style="display:flex;justify-content:space-between"><span style="font-size:11px;font-weight:700;color:var(--g1)">${cm.user}</span><span style="font-size:9px;color:#d1d5db">${timeAgo(cm.ts)}</span></div><p style="margin:2px 0 0;font-size:13px;line-height:1.4">${cm.text}</p></div>`).join('')}
+      ${cm.length>5&&!S.showAllCmt?`<button data-action="showAll" style="width:100%;padding:6px;margin-top:4px;border-radius:8px;border:1px solid #e5e7eb;background:#fafafa;color:var(--sub);font-size:11px;font-weight:600">${cm.length-5}${t('more')}</button>`:''}
+    </div>
+  </div>
+</div>`}
+
+// --- 추천등록 ---
+function rWriteRec(){
+  const tags=['no_signal','scenic','quiet','beach','trail','urban','night'];
+  return`<div style="padding-bottom:72px"><div style="padding:16px;display:flex;align-items:center;gap:10px"><button data-action="closeModal" style="font-size:20px;background:none">${t('back')}</button><h2 style="font-size:18px;font-weight:900">✍️ ${t('writeRec')}</h2></div>
+  <div style="padding:0 12px">
+    <div class="card"><label class="lbl">${t('recName')} *</label><input id="rf_name" class="inp" maxlength="30"></div>
+    <div class="card"><label class="lbl">${t('recDesc')} *</label><textarea id="rf_desc" class="inp" rows="2" maxlength="300" style="resize:none"></textarea></div>
+    <div class="card"><label class="lbl">${t('recMapGuide')}</label><div id="recFormMap" style="width:100%;height:180px;border-radius:12px;background:#e5e7eb;margin-top:4px"></div></div>
+    <div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="lbl">${t('recDist')}</label><input id="rf_dist" type="number" class="inp" step="0.1"></div><div><label class="lbl">${t('recDiff')}</label><select id="rf_diff" class="inp"><option value="easy">${t('easy')}</option><option value="medium">${t('med')}</option><option value="hard">${t('hard')}</option></select></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:10px">${tags.map(tg=>`<button data-rectag="${tg}" class="chip rec-tag-btn">#${tl(tg)}</button>`).join('')}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-bottom:12px"><button data-action="closeModal" style="padding:14px;border-radius:14px;background:#f3f4f6;font-weight:700;color:var(--sub)">${t('cancel')}</button><button data-action="submitRec" style="padding:14px;border-radius:14px;background:var(--g1);color:#fff;font-weight:700">${t('post')}</button></div>
+  </div></div>`}
+
+// --- 러닝 ---
+function rRunTab(){
+  const active=S.gpsState==='running'||S.gpsState==='paused',running=S.gpsState==='running';
+  return`<div style="padding-bottom:${active?'190px':'72px'}"><div style="padding:16px 14px 10px"><h1 style="font-size:22px;font-weight:900">${t('tabRun')} 🏃</h1></div>
+  <div style="padding:0 12px">${!active?`<div class="card" style="text-align:center;padding:28px 16px"><div style="font-size:40px;margin-bottom:10px">🏃‍♂️</div>
+    <select id="runSel" class="inp" style="margin-bottom:14px"><option value="">-- ${t('selCourse')} --</option>${[...S.courses,...S.recCourses].map(c=>`<option value="${c.id}">${cn(c)} (${c.distance}km)</option>`).join('')}</select>
+    <button data-action="startRun" style="width:100%;padding:14px;border-radius:50px;background:linear-gradient(135deg,var(--g1),#1b5e20);color:#fff;font-size:16px;font-weight:800">${t('startRun')}</button></div>`:
+  `<div class="card" style="padding:0;overflow:hidden"><div id="gpsMap" style="width:100%;height:240px;background:#e5e7eb"></div></div>`}</div>
+  ${active?`<div class="gps-panel"><div style="display:flex;gap:6px;margin-bottom:12px"><div class="gps-stat"><div class="val">${(S.gpsDist/1000).toFixed(2)}</div><div class="lbl">${t('dist')}</div></div><div class="gps-stat"><div class="val">${fmtTime(S.gpsElapsed)}</div><div class="lbl">${t('time')}</div></div><div class="gps-stat"><div class="val">${fmtPace(S.gpsDist/1000,S.gpsElapsed)}</div><div class="lbl">${t('pace')}</div></div></div><div style="display:flex;gap:8px">${running?`<button data-action="pauseRun" style="flex:1;padding:12px;border-radius:14px;background:#f59e0b;color:#fff;font-weight:700">${t('pause')}</button>`:`<button data-action="resumeRun" style="flex:1;padding:12px;border-radius:14px;background:var(--g1);color:#fff;font-weight:700">${t('resume')}</button>`}<button data-action="stopRun" style="flex:1;padding:12px;border-radius:14px;background:#ef4444;color:#fff;font-weight:700">${t('stop')}</button></div></div>`:''}
+</div>`}
+
+// --- 같이달려요 ---
+function rGroupTab(){return`<div style="padding-bottom:72px"><div style="padding:16px 14px 10px;display:flex;justify-content:space-between;align-items:center"><h1 style="font-size:22px;font-weight:900">${t('grTitle')} 🤝</h1><button data-action="openCG" style="padding:8px 14px;border-radius:12px;background:#7c3aed;color:#fff;font-size:12px;font-weight:700">+ ${t('createGr')}</button></div>
+  <div style="padding:0 12px">${S.groupRuns.length===0?`<div style="text-align:center;padding:60px 0;color:var(--dim)"><div style="font-size:40px;margin-bottom:10px">🤝</div><div style="font-size:13px">${S.lang==='ko'?'아직 모임이 없어요':'No groups yet'}</div></div>`:
+  S.groupRuns.map((g,i)=>{const c=[...S.courses,...S.recCourses].find(x=>x.id===g.course_id);const mb=g.members||[];const jd=mb.some(m=>m.nickname===S.nickname);const d=new Date(g.run_date);
+  return`<div class="card scale-in" style="animation-delay:${i*.04}s"><div style="display:flex;justify-content:space-between"><div><div style="font-size:14px;font-weight:800">${g.title||'--'}</div><div style="font-size:11px;color:var(--sub);margin-top:2px">${c?cn(c)+' · '+c.distance+'km':''}</div></div><div style="text-align:right;font-size:10px;color:var(--dim)">${d.getMonth()+1}/${d.getDate()}<br>${mb.length}/${g.max_members}${t('members')}</div></div>
+  <button data-ga="${jd?'leave':'join'}:${g.id}" style="width:100%;margin-top:10px;padding:10px;border-radius:12px;background:${jd?'#fef2f2':'#7c3aed'};color:${jd?'#ef4444':'#fff'};font-weight:700;font-size:12px;border:${jd?'1px solid #fecaca':'none'}">${jd?t('leave'):t('join')}</button></div>`}).join('')}</div></div>`}
+
+function rCreateGroup(){
+  return`<div style="padding-bottom:72px"><div style="padding:16px;display:flex;align-items:center;gap:10px"><button data-action="closeModal" style="font-size:20px;background:none">${t('back')}</button><h2 style="font-size:18px;font-weight:900">🤝 ${t('createGr')}</h2></div>
+  <div style="padding:0 12px"><div class="card" style="display:flex;flex-direction:column;gap:10px">
+    <div><label class="lbl">코스</label><select id="grC" class="inp">${[...S.courses,...S.recCourses].map(c=>`<option value="${c.id}">${cn(c)}</option>`).join('')}</select></div>
+    <div><label class="lbl">제목</label><input id="grT" class="inp"></div>
+    <div><label class="lbl">${t('runDate')}</label><input id="grD" type="datetime-local" class="inp"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="lbl">${t('maxM')}</label><input id="grM" type="number" value="10" class="inp"></div><div><label class="lbl">${t('paceL')}</label><input id="grP" class="inp" placeholder="5:30~6:00"></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px"><button data-action="closeModal" style="padding:12px;border-radius:14px;background:#f3f4f6;font-weight:700;color:var(--sub)">${t('cancel')}</button><button data-action="submitGr" style="padding:12px;border-radius:14px;background:#7c3aed;color:#fff;font-weight:700">${t('create')}</button></div>
+  </div></div></div>`}
+
+// --- MY ---
+function rMyTab(){return`<div style="padding-bottom:72px"><div style="padding:16px 14px 10px"><h1 style="font-size:22px;font-weight:900">MY 🏅</h1></div>
+  <div style="padding:0 12px"><div class="card" style="display:flex;gap:12px;text-align:center"><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.length}</div><div style="font-size:10px;color:var(--sub)">러닝</div></div><div style="flex:1"><div style="font-size:22px;font-weight:900;color:var(--g1)">${S.myRecords.reduce((s,r)=>s+(r.distance||0),0).toFixed(1)}</div><div style="font-size:10px;color:var(--sub)">km</div></div><div style="flex:1"><div style="font-size:14px;font-weight:700;margin-top:4px">${S.nickname}</div><div style="font-size:10px;color:var(--sub)">닉네임</div></div></div>
+  ${S.myRecords.length===0?`<div style="text-align:center;padding:40px 0;color:var(--dim)"><div style="font-size:36px;margin-bottom:8px">🏅</div><div style="font-size:13px">아직 기록이 없어요</div></div>`:
+  S.myRecords.map(r=>{const c=[...S.courses,...S.recCourses].find(x=>x.id===r.course_id);return`<div class="card"><div style="display:flex;justify-content:space-between"><span style="font-weight:700;font-size:13px">${c?cn(c):'--'}</span><span style="font-size:10px;color:var(--dim)">${new Date(r.ts||Date.now()).toLocaleDateString()}</span></div><div style="display:flex;gap:14px;margin-top:6px;font-size:12px;color:var(--sub)"><span>📏${(r.distance||0).toFixed(2)}km</span><span>⏱️${fmtTime(r.duration||0)}</span><span>⚡${r.avg_pace||'--'}</span></div></div>`}).join('')}
+  </div></div>`}
+
+function rTabBar(){return`<div class="tab-bar">${[{k:'home',i:'🏠',l:t('tabHome')},{k:'rec',i:'📝',l:t('tabRec')},{k:'run',i:'🏃',l:t('tabRun')},{k:'group',i:'🤝',l:t('tabGroup')},{k:'my',i:'👤',l:t('tabMy')}].map(tb=>`<button data-tab="${tb.k}" class="${S.tab===tb.k?'on':''}"><span class="ti">${tb.i}</span>${tb.l}</button>`).join('')}</div>`}
+
+// === 이벤트 ===
+let recSelectedTags=[];
+function bind(){
+  document.querySelectorAll('[data-tab]').forEach(el=>el.onclick=()=>{S.tab=el.dataset.tab;S.modal=null;S.selectedCourse=null;S.showAllCmt=false;render()});
+  const lt=$('langT');if(lt)lt.onclick=()=>{S.lang=S.lang==='ko'?'en':'ko';render()};
+  document.querySelectorAll('[data-action="toggleSig"]').forEach(el=>el.onclick=()=>{S.noSigFilter=!S.noSigFilter;render()});
+  document.querySelectorAll('[data-open]').forEach(el=>el.onclick=()=>{const[ty,id]=el.dataset.open.split(':');S.selectedType=ty;S.selectedCourse=ty==='official'?S.courses.find(c=>c.id===id):S.recCourses.find(c=>c.id===id);S.modal='detail';S.showAllCmt=false;render()});
+  document.querySelectorAll('[data-action="back"],[data-action="closeModal"]').forEach(el=>el.onclick=()=>{S.modal=null;S.selectedCourse=null;render()});
+  document.querySelectorAll('[data-action="like"]').forEach(el=>el.onclick=()=>{if(!S.selectedCourse)return;const id=S.selectedCourse.id,k=id+':'+S.userId;if(S.selectedType==='official'){if(S.likes[k])delete S.likes[k];else S.likes[k]=true;sl('likes',S.likes);render();api('toggleLike',{course_id:id,user_id:S.userId})}else{if(S.recLikes[k])delete S.recLikes[k];else S.recLikes[k]=true;sl('rlikes',S.recLikes);render();api('toggleRecLike',{rec_course_id:id,user_id:S.userId})}});
+  document.querySelectorAll('[data-rate]').forEach(el=>el.onclick=()=>{if(!S.selectedCourse)return;S.ratings[S.selectedCourse.id+':'+S.userId]=+el.dataset.rate;sl('ratings',S.ratings);render();api('upsertRating',{course_id:S.selectedCourse.id,user_id:S.userId,score:+el.dataset.rate})});
+  document.querySelectorAll('[data-action="comment"]').forEach(el=>el.onclick=()=>{const inp=$('cmtIn');if(!inp||!inp.value.trim()||!S.selectedCourse)return;const id=S.selectedCourse.id,txt=inp.value.trim(),cm={id:uid(),user:S.nickname,text:txt,ts:Date.now()};if(S.selectedType==='official'){if(!S.comments[id])S.comments[id]=[];S.comments[id].push(cm);sl('comments',S.comments);render();api('addComment',{course_id:id,user_id:S.userId,nickname:S.nickname,body:txt})}else{if(!S.recComments[id])S.recComments[id]=[];S.recComments[id].push(cm);sl('rcomments',S.recComments);render();api('addRecComment',{rec_course_id:id,user_id:S.userId,nickname:S.nickname,body:txt})}});
+  document.querySelectorAll('[data-action="showAll"]').forEach(el=>el.onclick=()=>{S.showAllCmt=true;render()});
+  document.querySelectorAll('[data-action="openWriteRec"]').forEach(el=>el.onclick=()=>{S.modal='writeRec';recSelectedTags=[];render()});
+  document.querySelectorAll('[data-rectag]').forEach(el=>{const tg=el.dataset.rectag;if(recSelectedTags.includes(tg))el.classList.add('on');el.onclick=()=>{if(recSelectedTags.includes(tg))recSelectedTags=recSelectedTags.filter(x=>x!==tg);else recSelectedTags.push(tg);el.classList.toggle('on')}});
+  document.querySelectorAll('[data-action="submitRec"]').forEach(el=>el.onclick=submitRec);
+  document.querySelectorAll('[data-action="startRun"]').forEach(el=>el.onclick=startGps);
+  document.querySelectorAll('[data-action="pauseRun"]').forEach(el=>el.onclick=()=>{S.gpsState='paused';render()});
+  document.querySelectorAll('[data-action="resumeRun"]').forEach(el=>el.onclick=()=>{S.gpsState='running';render()});
+  document.querySelectorAll('[data-action="stopRun"]').forEach(el=>el.onclick=stopGps);
+  document.querySelectorAll('[data-action="openCG"]').forEach(el=>el.onclick=()=>{S.modal='createGroup';render()});
+  document.querySelectorAll('[data-action="submitGr"]').forEach(el=>el.onclick=submitGroup);
+  document.querySelectorAll('[data-ga]').forEach(el=>el.onclick=()=>{const[act,gid]=el.dataset.ga.split(':');const g=S.groupRuns.find(x=>x.id===gid);if(!g)return;if(!g.members)g.members=[];if(act==='join'){if(!g.members.find(m=>m.nickname===S.nickname)){g.members.push({nickname:S.nickname});api('joinGroupRun',{group_run_id:gid,user_id:S.userId,nickname:S.nickname})}}else{g.members=g.members.filter(m=>m.nickname!==S.nickname);api('leaveGroupRun',{group_run_id:gid,user_id:S.userId})}sl('groups',S.groupRuns);render()});
+}
+
+async function submitRec(){
+  const name=$('rf_name')?.value.trim(),desc=$('rf_desc')?.value.trim(),dist=parseFloat($('rf_dist')?.value)||0,diff=$('rf_diff')?.value||'easy';
+  if(!name||!desc||!dist){alert(S.lang==='ko'?'이름, 설명, 거리를 입력하세요':'Fill required fields');return}
+  const tags=recSelectedTags.length?recSelectedTags:['scenic'];
+  const sd={id:'r_'+uid(),name,description:desc,area:S.lang==='ko'?'추천코스':'Pick',distance:dist,difficulty:diff,tags,no_signal:tags.includes('no_signal'),emoji:'📍',color:'#059669',lat:S.recFormLat,lng:S.recFormLng,route_coords:[{lat:S.recFormLat,lng:S.recFormLng}],author_id:S.userId,author_nickname:S.nickname};
+  S.recCourses.push({...sd,name_ko:name,name_en:name,area_ko:'추천코스',area_en:'Pick',desc,description_ko:desc,description_en:desc,surface:'',surface_ko:'',surface_en:'',author:S.nickname,ts:Date.now()});
+  sl('recs',S.recCourses);S.modal=null;S.tab='rec';render();api('createRecCourse',sd);
+}
+async function submitGroup(){
+  const cid=$('grC')?.value,title=$('grT')?.value,date=$('grD')?.value,max=+($('grM')?.value||10),pace=$('grP')?.value;
+  if(!cid||!date){alert(S.lang==='ko'?'코스와 날짜를 입력하세요':'Select course and date');return}
+  const c=[...S.courses,...S.recCourses].find(x=>x.id===cid);
+  S.groupRuns.push({id:uid(),course_id:cid,title:title||cn(c),run_date:date,max_members:max,pace,host_nickname:S.nickname,members:[{nickname:S.nickname}]});
+  sl('groups',S.groupRuns);S.modal=null;render();
+  const res=await api('createGroupRun',{course_id:cid,title:title||cn(c),description_ko:'',run_date:date,max_members:max,pace,host_id:S.userId,host_nickname:S.nickname});
+  if(res&&Array.isArray(res)&&res[0])api('joinGroupRun',{group_run_id:res[0].id,user_id:S.userId,nickname:S.nickname});
+}
+
+function startGps(){
+  const sel=$('runSel');if(!sel||!sel.value){alert(t('selCourse'));return}
+  S.selectedCourse=[...S.courses,...S.recCourses].find(c=>c.id===sel.value);
+  if(!navigator.geolocation){alert('GPS not supported');return}
+  S.gpsState='waiting';S.gpsCoords=[];S.gpsDist=0;S.gpsElapsed=0;
+  S.gpsWatch=navigator.geolocation.watchPosition(p=>{const pt={lat:p.coords.latitude,lng:p.coords.longitude,ts:Date.now()};if(S.gpsState==='waiting')S.gpsState='running';if(S.gpsState==='running'){if(S.gpsCoords.length)S.gpsDist+=calcDist(S.gpsCoords[S.gpsCoords.length-1],pt);S.gpsCoords.push(pt)}render()},e=>console.error(e),{enableHighAccuracy:true,maximumAge:3000,timeout:10000});
+  S.gpsTimer=setInterval(()=>{if(S.gpsState==='running'){S.gpsElapsed++;render()}},1000);render();
+}
+function stopGps(){
+  if(S.gpsWatch)navigator.geolocation.clearWatch(S.gpsWatch);if(S.gpsTimer)clearInterval(S.gpsTimer);
+  const r={course_id:S.selectedCourse?.id||'',distance:+(S.gpsDist/1000).toFixed(3),duration:S.gpsElapsed,avg_pace:fmtPace(S.gpsDist/1000,S.gpsElapsed),route:S.gpsCoords,ts:Date.now(),user_id:S.userId};
+  S.myRecords.unshift(r);sl('records',S.myRecords);S.gpsState='idle';S.gpsWatch=null;S.gpsTimer=null;S.tab='my';render();
+  api('saveRunRecord',{user_id:S.userId,course_id:r.course_id,distance:r.distance,duration:r.duration,avg_pace:r.avg_pace,route:r.route});
+}
+
+function hasKakao(){return typeof kakao!=='undefined'&&kakao.maps}
+function mapPH(el){if(el)el.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:11px">🗺️ 카카오맵 API 설정 필요</div>'}
+function initDetailMap(){const el=$('detailMap');if(!el)return;const c=S.selectedCourse;if(!c||!hasKakao()){mapPH(el);return}const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(c.lat,c.lng),level:5});new kakao.maps.Marker({map,position:new kakao.maps.LatLng(c.lat,c.lng)});if(c.route_coords?.length>1)new kakao.maps.Polyline({map,path:c.route_coords.map(p=>new kakao.maps.LatLng(p.lat,p.lng)),strokeWeight:4,strokeColor:c.color||'#059669',strokeOpacity:.8,strokeStyle:'solid'})}
+function initRecFormMap(){const el=$('recFormMap');if(!el)return;if(!hasKakao()){mapPH(el);return}const map=new kakao.maps.Map(el,{center:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),level:7});let mk=new kakao.maps.Marker({map,position:new kakao.maps.LatLng(S.recFormLat,S.recFormLng),draggable:true});kakao.maps.event.addListener(map,'click',e=>{S.recFormLat=e.latLng.getLat();S.recFormLng=e.latLng.getLng();mk.setPosition(e.latLng)})}
+
+async function loadFromServer(){
+  try{
+    const c=await api('getCourses');if(c?.length)S.courses=c;
+    const lk=await api('getLikes');if(Array.isArray(lk)){S.likes={};lk.forEach(l=>{S.likes[l.course_id+':'+l.user_id]=true})}
+    const rt=await api('getRatings');if(Array.isArray(rt)){S.ratings={};rt.forEach(r=>{S.ratings[r.course_id+':'+r.user_id]=r.score})}
+    const cm=await api('getComments');if(Array.isArray(cm)){S.comments={};cm.forEach(c=>{if(!S.comments[c.course_id])S.comments[c.course_id]=[];S.comments[c.course_id].push({id:c.id,user:c.nickname,text:c.body,ts:new Date(c.created_at).getTime()})})}
+    const rc=await api('getRecCourses');if(Array.isArray(rc)){S.recCourses=rc.map(r=>({id:r.id,name:r.name,name_ko:r.name,name_en:r.name,area:r.area||'추천',area_ko:r.area||'추천',area_en:r.area||'Pick',desc:r.description,description_ko:r.description,description_en:r.description,distance:r.distance||0,elevation:r.elevation||0,difficulty:r.difficulty||'easy',surface:r.surface||'',surface_ko:r.surface||'',surface_en:r.surface||'',tags:r.tags||[],no_signal:(r.tags||[]).includes('no_signal'),emoji:r.emoji||'📍',color:r.color||'#059669',lat:r.lat||35.15,lng:r.lng||129.06,route_coords:r.route_coords||[],author:r.author_nickname||'',ts:new Date(r.created_at).getTime()}))}
+    const rl=await api('getRecLikes');if(Array.isArray(rl)){S.recLikes={};rl.forEach(l=>{S.recLikes[l.rec_course_id+':'+l.user_id]=true})}
+    const rcm=await api('getRecComments');if(Array.isArray(rcm)){S.recComments={};rcm.forEach(c=>{if(!S.recComments[c.rec_course_id])S.recComments[c.rec_course_id]=[];S.recComments[c.rec_course_id].push({id:c.id,user:c.nickname,text:c.body,ts:new Date(c.created_at).getTime()})})}
+    const gr=await api('getGroupRuns');if(Array.isArray(gr))S.groupRuns=gr.map(g=>({...g,members:g.group_run_members||[]}));
+    if(S.userId){const mr=await api('getMyRecords',{user_id:S.userId});if(Array.isArray(mr))S.myRecords=mr}
+    sl('likes',S.likes);sl('ratings',S.ratings);sl('comments',S.comments);sl('recs',S.recCourses);sl('rlikes',S.recLikes);sl('rcomments',S.recComments);sl('groups',S.groupRuns);sl('records',S.myRecords);
+  }catch(e){console.log('Offline:',e)}
+  render();
+}
+async function ensureProfile(){
+  if(!S.nickname)return;
+  let p=await api('getProfile',{nickname:S.nickname});
+  if(p?.length)S.userId=p[0].id;
+  else{const c=await api('createProfile',{nickname:S.nickname,lang:S.lang});if(c?.length)S.userId=c[0].id}
+  sl('userId',S.userId);
+}
 function init(){
-  S.nickname=gl('nick','');S.courses=FC;
+  S.nickname=gl('nick','');S.userId=gl('userId',null);S.courses=FC;
   S.likes=gl('likes',{});S.ratings=gl('ratings',{});S.comments=gl('comments',{});
   S.recCourses=gl('recs',[]);S.recLikes=gl('rlikes',{});S.recComments=gl('rcomments',{});
   S.groupRuns=gl('groups',[]);S.myRecords=gl('records',[]);
+  S.showSplash=true;
   render();
-  api('getCourses').then(d=>{if(d&&Array.isArray(d)&&d.length){S.courses=d;render()}}).catch(()=>{});
+  if(S.nickname)ensureProfile().then(()=>loadFromServer());
 }
 init();
 </script>
