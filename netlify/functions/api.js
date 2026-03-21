@@ -1,124 +1,80 @@
-// netlify/functions/api.js
-// Supabase 키를 서버에서만 사용 - 프론트에 노출 안됨
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SB_URL=process.env.SUPABASE_URL;
+const SB_KEY=process.env.SUPABASE_SERVICE_KEY;
+const H={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,DELETE,PATCH,OPTIONS','Content-Type':'application/json'};
 
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
-  'Content-Type': 'application/json'
-};
-
-async function sbFetch(path, method = 'GET', body = null) {
-  const opts = {
-    method,
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=representation' : undefined
-    }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, opts);
+async function sb(path,method='GET',body=null){
+  const o={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}};
+  if(method==='POST')o.headers['Prefer']='return=representation';
+  if(body)o.body=JSON.stringify(body);
+  const r=await fetch(`${SB_URL}/rest/v1/${path}`,o);
+  if(method==='DELETE')return{ok:true};
   return r.json();
 }
+async function sbPatch(path,body){
+  await fetch(`${SB_URL}/rest/v1/${path}`,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
+  return{ok:true};
+}
 
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
+exports.handler=async(ev)=>{
+  if(ev.httpMethod==='OPTIONS')return{statusCode:200,headers:H,body:''};
+  let p;try{p=JSON.parse(ev.body||'{}')}catch{return{statusCode:400,headers:H,body:'{"error":"bad json"}'}}
+  const{action,...pr}=p;
+  try{let d;switch(action){
 
-  const { action, ...params } = JSON.parse(event.body || '{}');
+  // 프로필
+  case'createProfile':d=await sb('profiles','POST',{nickname:pr.nickname,lang:pr.lang||'ko'});break;
+  case'getProfile':d=await sb(`profiles?nickname=eq.${encodeURIComponent(pr.nickname)}&select=*`);break;
 
-  try {
-    let data;
-    switch (action) {
-      // 프로필
-      case 'createProfile':
-        data = await sbFetch('profiles', 'POST', { nickname: params.nickname, lang: params.lang || 'ko' });
-        break;
-      case 'getProfile':
-        data = await sbFetch(`profiles?nickname=eq.${encodeURIComponent(params.nickname)}&select=*`);
-        break;
+  // 코스
+  case'getCourses':d=await sb('courses?select=*&order=id');break;
 
-      // 코스
-      case 'getCourses':
-        data = await sbFetch('courses?select=*&order=id');
-        break;
+  // 좋아요
+  case'getLikes':d=await sb('likes?select=course_id,user_id');break;
+  case'toggleLike':{
+    const ex=await sb(`likes?course_id=eq.${pr.course_id}&user_id=eq.${pr.user_id}&select=id`);
+    if(ex.length>0){await sb(`likes?id=eq.${ex[0].id}`,'DELETE');d={action:'removed'}}
+    else d=await sb('likes','POST',{course_id:pr.course_id,user_id:pr.user_id});
+  }break;
 
-      // 좋아요
-      case 'getLikes':
-        data = await sbFetch('likes?select=course_id,user_id');
-        break;
-      case 'toggleLike':
-        const existing = await sbFetch(`likes?course_id=eq.${params.course_id}&user_id=eq.${params.user_id}&select=id`);
-        if (existing.length > 0) {
-          await sbFetch(`likes?id=eq.${existing[0].id}`, 'DELETE');
-          data = { action: 'removed' };
-        } else {
-          data = await sbFetch('likes', 'POST', { course_id: params.course_id, user_id: params.user_id });
-        }
-        break;
+  // 별점
+  case'getRatings':d=await sb('ratings?select=course_id,user_id,score');break;
+  case'upsertRating':{
+    const ex=await sb(`ratings?course_id=eq.${pr.course_id}&user_id=eq.${pr.user_id}&select=id`);
+    if(ex.length>0){await sbPatch(`ratings?id=eq.${ex[0].id}`,{score:pr.score});d={ok:true}}
+    else d=await sb('ratings','POST',{course_id:pr.course_id,user_id:pr.user_id,score:pr.score});
+  }break;
 
-      // 별점
-      case 'getRatings':
-        data = await sbFetch('ratings?select=course_id,user_id,score');
-        break;
-      case 'upsertRating':
-        const ex = await sbFetch(`ratings?course_id=eq.${params.course_id}&user_id=eq.${params.user_id}&select=id`);
-        if (ex.length > 0) {
-          await fetch(`${SUPABASE_URL}/rest/v1/ratings?id=eq.${ex[0].id}`, {
-            method: 'PATCH',
-            headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ score: params.score })
-          });
-          data = { updated: true };
-        } else {
-          data = await sbFetch('ratings', 'POST', { course_id: params.course_id, user_id: params.user_id, score: params.score });
-        }
-        break;
+  // 댓글
+  case'getComments':d=await sb('comments?select=*&order=created_at.desc');break;
+  case'addComment':d=await sb('comments','POST',{course_id:pr.course_id,user_id:pr.user_id,nickname:pr.nickname,body:pr.body});break;
 
-      // 댓글
-      case 'getComments':
-        data = await sbFetch(`comments?select=*&order=created_at.desc`);
-        break;
-      case 'addComment':
-        data = await sbFetch('comments', 'POST', {
-          course_id: params.course_id, user_id: params.user_id,
-          nickname: params.nickname, body: params.body
-        });
-        break;
+  // 추천코스
+  case'getRecCourses':d=await sb('rec_courses?select=*&order=created_at.desc');break;
+  case'createRecCourse':d=await sb('rec_courses','POST',pr);break;
 
-      // 같이 달려요
-      case 'getGroupRuns':
-        data = await sbFetch(`group_runs?select=*,group_run_members(*)&status=eq.open&order=run_date`);
-        break;
-      case 'createGroupRun':
-        data = await sbFetch('group_runs', 'POST', params);
-        break;
-      case 'joinGroupRun':
-        data = await sbFetch('group_run_members', 'POST', {
-          group_run_id: params.group_run_id, user_id: params.user_id, nickname: params.nickname
-        });
-        break;
-      case 'leaveGroupRun':
-        await sbFetch(`group_run_members?group_run_id=eq.${params.group_run_id}&user_id=eq.${params.user_id}`, 'DELETE');
-        data = { left: true };
-        break;
+  // 추천코스 좋아요
+  case'getRecLikes':d=await sb('rec_likes?select=rec_course_id,user_id');break;
+  case'toggleRecLike':{
+    const ex=await sb(`rec_likes?rec_course_id=eq.${pr.rec_course_id}&user_id=eq.${pr.user_id}&select=id`);
+    if(ex.length>0){await sb(`rec_likes?id=eq.${ex[0].id}`,'DELETE');d={action:'removed'}}
+    else d=await sb('rec_likes','POST',{rec_course_id:pr.rec_course_id,user_id:pr.user_id});
+  }break;
 
-      // 러닝 기록
-      case 'saveRunRecord':
-        data = await sbFetch('run_records', 'POST', params);
-        break;
-      case 'getMyRecords':
-        data = await sbFetch(`run_records?user_id=eq.${params.user_id}&select=*&order=created_at.desc&limit=20`);
-        break;
+  // 추천코스 댓글
+  case'getRecComments':d=await sb('rec_comments?select=*&order=created_at.desc');break;
+  case'addRecComment':d=await sb('rec_comments','POST',{rec_course_id:pr.rec_course_id,user_id:pr.user_id,nickname:pr.nickname,body:pr.body});break;
 
-      default:
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Unknown action' }) };
-    }
-    return { statusCode: 200, headers, body: JSON.stringify(data) };
-  } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
-  }
+  // 같이 달려요
+  case'getGroupRuns':d=await sb('group_runs?select=*,group_run_members(*)&order=run_date');break;
+  case'createGroupRun':d=await sb('group_runs','POST',pr);break;
+  case'joinGroupRun':d=await sb('group_run_members','POST',{group_run_id:pr.group_run_id,user_id:pr.user_id,nickname:pr.nickname});break;
+  case'leaveGroupRun':d=await sb(`group_run_members?group_run_id=eq.${pr.group_run_id}&user_id=eq.${pr.user_id}`,'DELETE');break;
+
+  // 러닝 기록
+  case'saveRunRecord':d=await sb('run_records','POST',pr);break;
+  case'getMyRecords':d=await sb(`run_records?user_id=eq.${pr.user_id}&select=*&order=created_at.desc&limit=20`);break;
+
+  default:return{statusCode:400,headers:H,body:'{"error":"unknown action"}'}}
+  return{statusCode:200,headers:H,body:JSON.stringify(d)}}
+  catch(e){return{statusCode:500,headers:H,body:JSON.stringify({error:e.message})}}
 };
