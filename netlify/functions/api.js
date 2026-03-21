@@ -24,6 +24,8 @@ exports.handler=async(ev)=>{
   // 프로필
   case'createProfile':d=await sb('profiles','POST',{nickname:pr.nickname,lang:pr.lang||'ko'});break;
   case'getProfile':d=await sb(`profiles?nickname=eq.${encodeURIComponent(pr.nickname)}&select=*`);break;
+  case'getAllProfiles':d=await sb('profiles?select=id,nickname');break;
+  case'getAllProfiles':d=await sb('profiles?select=id,nickname');break;
 
   // 코스
   case'getCourses':d=await sb('courses?select=*&order=id');break;
