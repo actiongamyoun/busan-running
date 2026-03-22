@@ -1,82 +1,180 @@
-const SB_URL=process.env.SUPABASE_URL;
-const SB_KEY=process.env.SUPABASE_SERVICE_KEY;
-const H={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'GET,POST,DELETE,PATCH,OPTIONS','Content-Type':'application/json'};
+// netlify/functions/api.js  ─  Supabase 완전 연동판
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY;
 
-async function sb(path,method='GET',body=null){
-  const o={method,headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'}};
-  if(method==='POST')o.headers['Prefer']='return=representation';
-  if(body)o.body=JSON.stringify(body);
-  const r=await fetch(`${SB_URL}/rest/v1/${path}`,o);
-  if(method==='DELETE')return{ok:true};
-  return r.json();
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Access-Control-Allow-Methods': 'GET,POST,PATCH,DELETE,OPTIONS',
+  'Content-Type': 'application/json'
+};
+
+async function sb(path, method = 'GET', body = null, extra = {}) {
+  const h = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    ...extra
+  };
+  if (method === 'POST' || method === 'PATCH') h['Prefer'] = 'return=representation';
+  const opts = { method, headers: h };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, opts);
+  const text = await r.text();
+  try { return JSON.parse(text); } catch { return text; }
 }
-async function sbPatch(path,body){
-  await fetch(`${SB_URL}/rest/v1/${path}`,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body)});
-  return{ok:true};
-}
 
-exports.handler=async(ev)=>{
-  if(ev.httpMethod==='OPTIONS')return{statusCode:200,headers:H,body:''};
-  let p;try{p=JSON.parse(ev.body||'{}')}catch{return{statusCode:400,headers:H,body:'{"error":"bad json"}'}}
-  const{action,...pr}=p;
-  try{let d;switch(action){
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
+  let params;
+  try { params = JSON.parse(event.body || '{}'); } catch { return { statusCode: 400, headers, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
+  const { action, ...p } = params;
 
-  // 프로필
-  case'createProfile':d=await sb('profiles','POST',{nickname:pr.nickname,lang:pr.lang||'ko'});break;
-  case'getProfile':d=await sb(`profiles?nickname=eq.${encodeURIComponent(pr.nickname)}&select=*`);break;
-  case'getAllProfiles':d=await sb('profiles?select=id,nickname');break;
-  case'getAllProfiles':d=await sb('profiles?select=id,nickname');break;
+  try {
+    let data;
+    switch (action) {
 
-  // 코스
-  case'getCourses':d=await sb('courses?select=*&order=id');break;
+      // ── 프로필 ──────────────────────────────────────────────────────
+      case 'checkNickname': {
+        // 닉네임 중복 확인
+        const rows = await sb(`profiles?nickname=eq.${encodeURIComponent(p.nickname)}&select=id`);
+        data = { exists: Array.isArray(rows) && rows.length > 0 };
+        break;
+      }
+      case 'createProfile': {
+        // 중복 확인 후 생성
+        const existing = await sb(`profiles?nickname=eq.${encodeURIComponent(p.nickname)}&select=id,nickname`);
+        if (Array.isArray(existing) && existing.length > 0) {
+          data = { error: 'duplicate', profile: existing[0] };
+        } else {
+          const created = await sb('profiles', 'POST', { nickname: p.nickname, lang: p.lang || 'ko' });
+          data = { profile: Array.isArray(created) ? created[0] : created };
+        }
+        break;
+      }
+      case 'getProfile': {
+        const rows = await sb(`profiles?nickname=eq.${encodeURIComponent(p.nickname)}&select=*`);
+        data = Array.isArray(rows) ? rows[0] || null : null;
+        break;
+      }
 
-  // 좋아요
-  case'getLikes':d=await sb('likes?select=course_id,user_id');break;
-  case'toggleLike':{
-    const ex=await sb(`likes?course_id=eq.${pr.course_id}&user_id=eq.${pr.user_id}&select=id`);
-    if(ex.length>0){await sb(`likes?id=eq.${ex[0].id}`,'DELETE');d={action:'removed'}}
-    else d=await sb('likes','POST',{course_id:pr.course_id,user_id:pr.user_id});
-  }break;
+      // ── 코스 ────────────────────────────────────────────────────────
+      case 'getCourses':
+        data = await sb('courses?select=*&order=id');
+        break;
 
-  // 별점
-  case'getRatings':d=await sb('ratings?select=course_id,user_id,score');break;
-  case'upsertRating':{
-    const ex=await sb(`ratings?course_id=eq.${pr.course_id}&user_id=eq.${pr.user_id}&select=id`);
-    if(ex.length>0){await sbPatch(`ratings?id=eq.${ex[0].id}`,{score:pr.score});d={ok:true}}
-    else d=await sb('ratings','POST',{course_id:pr.course_id,user_id:pr.user_id,score:pr.score});
-  }break;
+      // ── 좋아요 (공식 코스) ───────────────────────────────────────────
+      case 'getLikes':
+        data = await sb('likes?select=course_id,user_id');
+        break;
+      case 'toggleLike': {
+        const ex = await sb(`likes?course_id=eq.${p.course_id}&user_id=eq.${p.user_id}&select=id`);
+        if (Array.isArray(ex) && ex.length > 0) {
+          await sb(`likes?id=eq.${ex[0].id}`, 'DELETE');
+          data = { action: 'removed' };
+        } else {
+          data = await sb('likes', 'POST', { course_id: p.course_id, user_id: p.user_id });
+          data = { action: 'added' };
+        }
+        break;
+      }
 
-  // 댓글
-  case'getComments':d=await sb('comments?select=*&order=created_at.desc');break;
-  case'addComment':d=await sb('comments','POST',{course_id:pr.course_id,user_id:pr.user_id,nickname:pr.nickname,body:pr.body});break;
+      // ── 별점 ────────────────────────────────────────────────────────
+      case 'getRatings':
+        data = await sb('ratings?select=course_id,user_id,score');
+        break;
+      case 'upsertRating': {
+        const ex = await sb(`ratings?course_id=eq.${p.course_id}&user_id=eq.${p.user_id}&select=id`);
+        if (Array.isArray(ex) && ex.length > 0) {
+          await sb(`ratings?id=eq.${ex[0].id}`, 'PATCH', { score: p.score });
+          data = { updated: true };
+        } else {
+          data = await sb('ratings', 'POST', { course_id: p.course_id, user_id: p.user_id, score: p.score });
+        }
+        break;
+      }
 
-  // 추천코스
-  case'getRecCourses':d=await sb('rec_courses?select=*&order=created_at.desc');break;
-  case'createRecCourse':d=await sb('rec_courses','POST',pr);break;
+      // ── 댓글 (공식 코스) ─────────────────────────────────────────────
+      case 'getComments':
+        data = await sb('comments?select=*&order=created_at.desc');
+        break;
+      case 'addComment':
+        data = await sb('comments', 'POST', { course_id: p.course_id, user_id: p.user_id, nickname: p.nickname, body: p.body });
+        break;
 
-  // 추천코스 좋아요
-  case'getRecLikes':d=await sb('rec_likes?select=rec_course_id,user_id');break;
-  case'toggleRecLike':{
-    const ex=await sb(`rec_likes?rec_course_id=eq.${pr.rec_course_id}&user_id=eq.${pr.user_id}&select=id`);
-    if(ex.length>0){await sb(`rec_likes?id=eq.${ex[0].id}`,'DELETE');d={action:'removed'}}
-    else d=await sb('rec_likes','POST',{rec_course_id:pr.rec_course_id,user_id:pr.user_id});
-  }break;
+      // ── 추천 코스 ────────────────────────────────────────────────────
+      case 'getRecCourses':
+        data = await sb('rec_courses?select=*&order=created_at.desc');
+        break;
+      case 'createRecCourse':
+        data = await sb('rec_courses', 'POST', {
+          id: p.id, name: p.name, description: p.description,
+          area: p.area, distance: p.distance, difficulty: p.difficulty,
+          elevation: p.elevation || 0, surface: p.surface || '',
+          tags: p.tags || [], no_signal: p.no_signal || false,
+          emoji: p.emoji || '📍', color: p.color || '#059669',
+          lat: p.lat, lng: p.lng, route_coords: p.route_coords || [],
+          author_id: p.author_id, author_nickname: p.author_nickname
+        });
+        break;
 
-  // 추천코스 댓글
-  case'getRecComments':d=await sb('rec_comments?select=*&order=created_at.desc');break;
-  case'addRecComment':d=await sb('rec_comments','POST',{rec_course_id:pr.rec_course_id,user_id:pr.user_id,nickname:pr.nickname,body:pr.body});break;
+      // ── 추천 코스 좋아요 ─────────────────────────────────────────────
+      case 'getRecLikes':
+        data = await sb('rec_likes?select=rec_course_id,user_id');
+        break;
+      case 'toggleRecLike': {
+        const ex = await sb(`rec_likes?rec_course_id=eq.${p.rec_course_id}&user_id=eq.${p.user_id}&select=id`);
+        if (Array.isArray(ex) && ex.length > 0) {
+          await sb(`rec_likes?id=eq.${ex[0].id}`, 'DELETE');
+          data = { action: 'removed' };
+        } else {
+          await sb('rec_likes', 'POST', { rec_course_id: p.rec_course_id, user_id: p.user_id });
+          data = { action: 'added' };
+        }
+        break;
+      }
 
-  // 같이 달려요
-  case'getGroupRuns':d=await sb('group_runs?select=*,group_run_members(*)&order=run_date');break;
-  case'createGroupRun':d=await sb('group_runs','POST',pr);break;
-  case'joinGroupRun':d=await sb('group_run_members','POST',{group_run_id:pr.group_run_id,user_id:pr.user_id,nickname:pr.nickname});break;
-  case'leaveGroupRun':d=await sb(`group_run_members?group_run_id=eq.${pr.group_run_id}&user_id=eq.${pr.user_id}`,'DELETE');break;
+      // ── 추천 코스 댓글 ────────────────────────────────────────────────
+      case 'getRecComments':
+        data = await sb('rec_comments?select=*&order=created_at.desc');
+        break;
+      case 'addRecComment':
+        data = await sb('rec_comments', 'POST', { rec_course_id: p.rec_course_id, user_id: p.user_id, nickname: p.nickname, body: p.body });
+        break;
 
-  // 러닝 기록
-  case'saveRunRecord':d=await sb('run_records','POST',pr);break;
-  case'getMyRecords':d=await sb(`run_records?user_id=eq.${pr.user_id}&select=*&order=created_at.desc&limit=20`);break;
+      // ── 같이 달려요 ──────────────────────────────────────────────────
+      case 'getGroupRuns':
+        data = await sb('group_runs?select=*,group_run_members(*)&status=eq.open&order=run_date');
+        break;
+      case 'createGroupRun':
+        data = await sb('group_runs', 'POST', {
+          course_id: p.course_id, host_id: p.host_id, host_nickname: p.host_nickname,
+          title_ko: p.title, description_ko: p.description,
+          run_date: p.run_date, max_members: p.max_members || 10,
+          pace: p.pace, status: 'open'
+        });
+        break;
+      case 'joinGroupRun':
+        data = await sb('group_run_members', 'POST', { group_run_id: p.group_run_id, user_id: p.user_id, nickname: p.nickname });
+        break;
+      case 'leaveGroupRun':
+        await sb(`group_run_members?group_run_id=eq.${p.group_run_id}&user_id=eq.${p.user_id}`, 'DELETE');
+        data = { left: true };
+        break;
 
-  default:return{statusCode:400,headers:H,body:'{"error":"unknown action"}'}}
-  return{statusCode:200,headers:H,body:JSON.stringify(d)}}
-  catch(e){return{statusCode:500,headers:H,body:JSON.stringify({error:e.message})}}
+      // ── GPS 러닝 기록 ─────────────────────────────────────────────────
+      case 'saveRunRecord':
+        data = await sb('run_records', 'POST', { user_id: p.user_id, course_id: p.course_id || null, distance: p.distance, duration: p.duration, avg_pace: p.avg_pace, route: p.route || [] });
+        break;
+      case 'getMyRecords':
+        data = await sb(`run_records?user_id=eq.${p.user_id}&select=*&order=created_at.desc&limit=20`);
+        break;
+
+      default:
+        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Unknown action' }) };
+    }
+    return { statusCode: 200, headers, body: JSON.stringify(data) };
+  } catch (e) {
+    return { statusCode: 500, headers, body: JSON.stringify({ error: e.message }) };
+  }
 };
