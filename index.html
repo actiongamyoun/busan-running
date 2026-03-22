@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>부산 러닝 | Busan Running</title>
+<title>부산러너 | Busan Runner</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
@@ -95,6 +95,54 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
   display:flex;align-items:baseline;gap:2px;
 }
 .course-card-dist-badge span{font-size:10px;font-weight:600;color:var(--sub)}
+
+/* ===== 대문(스플래시) 디자인 ===== */
+@keyframes waveMove{0%{transform:translateX(0) scaleY(1)}50%{transform:translateX(-8%)scaleY(1.04)}100%{transform:translateX(0) scaleY(1)}}
+@keyframes waveMove2{0%{transform:translateX(0) scaleY(1)}50%{transform:translateX(6%)scaleY(.97)}100%{transform:translateX(0) scaleY(1)}}
+@keyframes floatUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes logoSpin{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.1) rotate(4deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.3)}70%{box-shadow:0 0 0 12px rgba(255,255,255,0)}}
+
+.splash-wrap{position:fixed;inset:0;overflow:hidden;display:flex;flex-direction:column}
+.splash-bg{position:absolute;inset:0;background:linear-gradient(175deg,#064e3b 0%,#065f46 35%,#0284c7 100%)}
+.splash-wave{position:absolute;bottom:-10px;left:-5%;width:110%;height:45%;opacity:.18}
+.splash-wave::before{content:'';display:block;width:100%;height:100%;border-radius:50% 55% 45% 50%/40% 45% 55% 60%;background:rgba(255,255,255,.5);animation:waveMove 7s ease-in-out infinite}
+.splash-wave2{bottom:10%;opacity:.1}
+.splash-wave2::before{animation:waveMove2 9s ease-in-out infinite;border-radius:55% 45% 50% 50%/55% 50% 45% 40%}
+.splash-city{position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to top,rgba(0,0,0,.25),transparent);pointer-events:none}
+
+.splash-content{position:relative;z-index:1;display:flex;flex-direction:column;height:100%;padding:0 28px 32px}
+.splash-top{padding-top:env(safe-area-inset-top,16px);padding-top:max(env(safe-area-inset-top,16px),16px);display:flex;justify-content:flex-end;padding-bottom:8px}
+.splash-lang{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;backdrop-filter:blur(8px)}
+
+.splash-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding-bottom:16px}
+.splash-logo-wrap{width:88px;height:88px;border-radius:28px;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;margin-bottom:10px;animation:logoSpin .7s cubic-bezier(.22,1,.36,1) both .1s;backdrop-filter:blur(10px)}
+.splash-logo-svg{width:56px;height:56px}
+.splash-title{font-size:42px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;animation:floatUp .6s cubic-bezier(.22,1,.36,1) both .25s}
+.splash-sub{font-size:13px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:6px;margin-top:4px;animation:floatUp .6s cubic-bezier(.22,1,.36,1) both .35s}
+.splash-tagline{font-size:13px;color:rgba(255,255,255,.8);margin-top:10px;font-weight:500;animation:floatUp .6s cubic-bezier(.22,1,.36,1) both .45s}
+
+.splash-stats{display:flex;align-items:center;justify-content:center;gap:0;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:18px;padding:12px 20px;margin-bottom:24px;backdrop-filter:blur(10px);animation:floatUp .6s cubic-bezier(.22,1,.36,1) both .5s}
+.splash-stat-item{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+.splash-stat-n{font-size:18px;font-weight:900;color:#fff}
+.splash-stat-l{font-size:10px;color:rgba(255,255,255,.65);font-weight:600}
+.splash-stat-div{width:1px;height:32px;background:rgba(255,255,255,.2);margin:0 8px}
+
+.splash-form{animation:floatUp .6s cubic-bezier(.22,1,.36,1) both .55s}
+.splash-form-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.75);margin-bottom:8px;letter-spacing:.5px}
+.splash-input-wrap{position:relative;display:flex;align-items:center}
+.splash-input{width:100%;padding:14px 48px 14px 18px;border-radius:16px;background:rgba(255,255,255,.95);border:2px solid transparent;font-size:16px;font-weight:600;color:#111827;transition:border-color .2s,box-shadow .2s;-webkit-user-select:text;user-select:text}
+.splash-input:focus{border-color:rgba(255,255,255,.9);box-shadow:0 0 0 4px rgba(255,255,255,.2);outline:none}
+.splash-input::placeholder{color:#9ca3af;font-weight:400}
+.splash-nick-status{position:absolute;right:14px;font-size:16px;font-weight:800;transition:all .2s}
+.sns-ok{color:#059669}
+.sns-err{color:#ef4444}
+.sns-checking{color:#f59e0b;animation:pulse 1s infinite}
+.splash-nick-msg{font-size:12px;margin-top:6px;min-height:18px;font-weight:600;padding-left:4px;color:#fca5a5;transition:all .2s}
+.splash-start-btn{width:100%;margin-top:14px;padding:16px;border-radius:16px;background:linear-gradient(135deg,#10b981,#0ea5e9);color:#fff;font-size:17px;font-weight:800;letter-spacing:-.3px;transition:all .2s;box-shadow:0 8px 24px rgba(16,185,129,.35)}
+.splash-start-btn:not(:disabled):active{transform:scale(.97)}
+.splash-start-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.splash-footer{text-align:center;margin-top:16px;font-size:12px;color:rgba(255,255,255,.5);font-weight:500}
 </style>
 </head>
 <body>
@@ -108,7 +156,7 @@ document.addEventListener('keydown',e=>{if(e.key==='F12'||(e.ctrlKey&&e.shiftKey
 
 // === 다국어 ===
 const T={ko:{
-appName:'부산 러닝',subtitle:'신호 없이 달리는 부산의 베스트 코스',enterNick:'닉네임을 입력하세요',nickPH:'예: 해운대러너🏃',start:'시작하기 →',
+appName:'부산러너',subtitle:'부산을 달리는 러너들의 커뮤니티',enterNick:'닉네임을 입력하세요',nickPH:'예: 해운대러너🏃',start:'시작하기 →',
 total:'전체 코스',noSig:'신호없는',result:'검색 결과',noSigOnly:'신호없는 코스만 보기',noSigDesc:'끊김 없이 달릴 수 있는 코스',
 diff:'난이도',dist:'거리',vibe:'분위기',sort:'정렬',all:'전체',easy:'쉬움',med:'보통',hard:'어려움',
 short:'~5km',mid:'5~10km',long:'10km+',scenic:'경치',quiet:'조용',beach:'해변',trail:'트레일',urban:'도심',night:'야경',
@@ -128,9 +176,9 @@ recDist:'거리(km)',recElev:'고도차(m)',recSurf:'노면',recDiff:'난이도'
 recMapGuide:'지도를 탭하여 출발점을 지정하세요',recLatLng:'위치 좌표',
 recSortNew:'최신순',recSortPop:'인기순',noRec:'아직 추천코스가 없어요',firstRec:'첫 번째 코스를 등록해보세요!',
 comingSoon:'Coming Soon',runRecord:'내 러닝 기록',expandArea:'지역 확장',
-footer:'달리는 당신이 아름답습니다',ver:'부산 러닝 앱 v1.0',langSw:'English',
+footer:'달리는 당신이 아름답습니다',ver:'부산러너 v1.0',langSw:'English',dupErr:'이미 사용 중인 닉네임이에요 다른 이름을 입력해 주세요',dupChecking:'확인 중...',nickLabel:'러너 이름',nickPH2:'나만의 러너 이름을 입력하세요',startBtn2:'입장하기 →',
 },en:{
-appName:'Busan Running',subtitle:'Best signal-free courses in Busan',enterNick:'Enter your nickname',nickPH:'e.g. RunnerKim🏃',start:'Get Started →',
+appName:'Busan Runner',subtitle:'Running community for Busan runners',enterNick:'Enter your nickname',nickPH:'e.g. RunnerKim🏃',start:'Get Started →',
 total:'All Courses',noSig:'Signal-free',result:'Results',noSigOnly:'Signal-free only',noSigDesc:'No traffic lights',
 diff:'Difficulty',dist:'Distance',vibe:'Vibe',sort:'Sort',all:'All',easy:'Easy',med:'Medium',hard:'Hard',
 short:'~5km',mid:'5~10km',long:'10km+',scenic:'Scenic',quiet:'Quiet',beach:'Beach',trail:'Trail',urban:'Urban',night:'Night',
@@ -150,12 +198,12 @@ recDist:'Distance(km)',recElev:'Elevation(m)',recSurf:'Surface',recDiff:'Difficu
 recMapGuide:'Tap map to set start point',recLatLng:'Coordinates',
 recSortNew:'Newest',recSortPop:'Popular',noRec:'No picks yet',firstRec:'Be the first to share!',
 comingSoon:'Coming Soon',runRecord:'My Records',expandArea:'More Areas',
-footer:'You are beautiful when you run',ver:'Busan Running v1.0',langSw:'한국어',
+footer:'You are beautiful when you run',ver:'Busan Runner v1.0',langSw:'한국어',dupErr:'This name is already taken. Try another!',dupChecking:'Checking...',nickLabel:'Runner Name',nickPH2:'Enter your unique runner name',startBtn2:'Enter →',
 }};
 
 // === 상태 ===
 let S={
-lang:'ko',tab:'home',nickname:'',userId:null,
+lang:'ko',tab:'home',nickname:'',userId:null,loaded:false,
 courses:[],likes:{},ratings:{},comments:{},
 recCourses:[],recLikes:{},recComments:{},
 groupRuns:[],myRecords:[],
@@ -190,18 +238,107 @@ function tl(tag){const m=TM[tag];return m?(S.lang==='ko'?m.ko:m.en):tag}
 
 // 좋아요/평점/댓글 (공식코스)
 function gLk(id){return Object.keys(S.likes).filter(k=>k.startsWith(id+':')).length}
-function iLk(id){return!!S.likes[id+':'+S.nickname]}
+function iLk(id){return!!(S.userId&&S.likes[id+':'+S.userId])}
 function gAv(id){const e=Object.entries(S.ratings).filter(([k])=>k.startsWith(id+':'));if(!e.length)return 0;return e.reduce((s,[,v])=>s+v,0)/e.length}
 function gRc(id){return Object.entries(S.ratings).filter(([k])=>k.startsWith(id+':')).length}
-function gMr(id){return S.ratings[id+':'+S.nickname]||0}
+function gMr(id){return(S.userId&&S.ratings[id+':'+S.userId])||0}
 function gCm(id){return(S.comments[id]||[]).sort((a,b)=>b.ts-a.ts)}
 // 좋아요/댓글 (추천코스)
 function rLk(id){return Object.keys(S.recLikes).filter(k=>k.startsWith(id+':')).length}
-function riLk(id){return!!S.recLikes[id+':'+S.nickname]}
+function riLk(id){return!!(S.userId&&S.recLikes[id+':'+S.userId])}
 function rCm(id){return(S.recComments[id]||[]).sort((a,b)=>b.ts-a.ts)}
 
 // API
-async function api(action,params={}){try{const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...params})});return await r.json()}catch{return null}}
+async function api(action,params={}){try{const r=await fetch('/.netlify/functions/api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,...params})});if(!r.ok)return null;return await r.json()}catch{return null}}
+
+// ── Supabase 동기화 헬퍼 ──────────────────────────────────────────────
+async function syncFromServer(){
+  // 코스
+  const courses=await api('getCourses');
+  if(courses&&Array.isArray(courses)&&courses.length){S.courses=courses}
+
+  // 추천 코스
+  const recs=await api('getRecCourses');
+  if(recs&&Array.isArray(recs)){
+    S.recCourses=recs.map(r=>({
+      id:r.id,name:r.name,name_ko:r.name,name_en:r.name,
+      area:r.area||'',area_ko:r.area||'',area_en:r.area||'',
+      desc:r.description||'',description_ko:r.description||'',description_en:r.description||'',
+      distance:r.distance,elevation:r.elevation||0,difficulty:r.difficulty||'easy',
+      surface:r.surface||'',surface_ko:r.surface||'',surface_en:r.surface||'',
+      tags:r.tags||[],no_signal:r.no_signal||false,
+      emoji:r.emoji||'📍',color:r.color||'#059669',
+      lat:r.lat,lng:r.lng,route_coords:r.route_coords||[],
+      author:r.author_nickname||'',ts:new Date(r.created_at).getTime()
+    }));
+  }
+
+  // 좋아요 (공식코스)
+  const likes=await api('getLikes');
+  if(likes&&Array.isArray(likes)){
+    S.likes={};
+    likes.forEach(l=>{ S.likes[l.course_id+':'+l.user_id]=true; });
+  }
+
+  // 추천코스 좋아요
+  const rlikes=await api('getRecLikes');
+  if(rlikes&&Array.isArray(rlikes)){
+    S.recLikes={};
+    rlikes.forEach(l=>{ S.recLikes[l.rec_course_id+':'+l.user_id]=true; });
+  }
+
+  // 별점
+  const ratings=await api('getRatings');
+  if(ratings&&Array.isArray(ratings)){
+    S.ratings={};
+    ratings.forEach(r=>{ S.ratings[r.course_id+':'+r.user_id]=r.score; });
+  }
+
+  // 댓글 (공식코스)
+  const comments=await api('getComments');
+  if(comments&&Array.isArray(comments)){
+    S.comments={};
+    comments.forEach(c=>{
+      if(!S.comments[c.course_id])S.comments[c.course_id]=[];
+      S.comments[c.course_id].push({id:c.id,user:c.nickname,text:c.body,ts:new Date(c.created_at).getTime()});
+    });
+  }
+
+  // 추천코스 댓글
+  const rcmts=await api('getRecComments');
+  if(rcmts&&Array.isArray(rcmts)){
+    S.recComments={};
+    rcmts.forEach(c=>{
+      if(!S.recComments[c.rec_course_id])S.recComments[c.rec_course_id]=[];
+      S.recComments[c.rec_course_id].push({id:c.id,user:c.nickname,text:c.body,ts:new Date(c.created_at).getTime()});
+    });
+  }
+
+  // 같이 달려요
+  const groups=await api('getGroupRuns');
+  if(groups&&Array.isArray(groups)){
+    S.groupRuns=groups.map(g=>({
+      id:g.id,course_id:g.course_id,
+      title:g.title_ko||g.title_en||'',
+      description:g.description_ko||'',
+      run_date:g.run_date,max_members:g.max_members||10,
+      pace:g.pace||'',host_nickname:g.host_nickname,
+      members:(g.group_run_members||[]).map(m=>({nickname:m.nickname,user_id:m.user_id})),
+      host_id:g.host_id
+    }));
+  }
+
+  // 내 러닝 기록
+  if(S.userId){
+    const records=await api('getMyRecords',{user_id:S.userId});
+    if(records&&Array.isArray(records)){
+      S.myRecords=records.map(r=>({
+        course_id:r.course_id,distance:r.distance,
+        duration:r.duration,avg_pace:r.avg_pace,ts:new Date(r.created_at).getTime()
+      }));
+    }
+  }
+}
 
 // === 코스 데이터 ===
 const FC=[
@@ -241,23 +378,100 @@ function render(){
 }
 
 // --- 로그인 ---
-function rLogin(){return`
-<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#ecfdf5,#e0f2fe 40%,#fdf2f8);padding:24px">
-<div style="background:#fff;border-radius:28px;padding:48px 36px;max-width:380px;width:100%;box-shadow:0 20px 60px rgba(5,150,105,.12);text-align:center">
-<div style="font-size:56px;margin-bottom:8px">🏃‍♂️</div>
-<h1 style="font-size:28px;font-weight:900;color:#064e3b;letter-spacing:-1px">${t('appName')}</h1>
-<p style="color:var(--g1);font-size:14px;margin:4px 0 24px;font-weight:500">${t('subtitle')}</p>
-<button id="langBtn" style="margin-bottom:20px;padding:6px 16px;border-radius:20px;background:#f3f4f6;font-size:12px;font-weight:600;color:#374151">${t('langSw')}</button>
-<div style="text-align:left;margin-bottom:8px"><label style="font-size:13px;font-weight:600;color:#374151">${t('enterNick')}</label></div>
-<input id="nickIn" maxlength="12" placeholder="${t('nickPH')}" class="inp">
-<button id="startBtn" style="width:100%;margin-top:16px;padding:14px;border-radius:14px;background:linear-gradient(135deg,var(--g1),var(--g2));color:#fff;font-size:16px;font-weight:700">${t('start')}</button>
-</div></div>`}
+function rLogin(){
+  return`<div class="splash-wrap">
+  <div class="splash-bg">
+    <div class="splash-wave"></div>
+    <div class="splash-wave splash-wave2"></div>
+    <div class="splash-city"></div>
+  </div>
+  <div class="splash-content">
+    <div class="splash-top">
+      <button id="langBtn" class="splash-lang">${t('langSw')}</button>
+    </div>
+    <div class="splash-hero">
+      <div class="splash-logo-wrap">
+        <svg class="splash-logo-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="38" fill="white" fill-opacity="0.12" stroke="white" stroke-width="1.5" stroke-opacity="0.3"/>
+          <text x="40" y="52" text-anchor="middle" font-size="36" fill="white">🏃</text>
+        </svg>
+      </div>
+      <h1 class="splash-title">부산러너</h1>
+      <p class="splash-sub">BUSAN RUNNER</p>
+      <div class="splash-tagline">${t('subtitle')}</div>
+    </div>
+    <div class="splash-stats">
+      <div class="splash-stat-item"><span class="splash-stat-n">12</span><span class="splash-stat-l">코스</span></div>
+      <div class="splash-stat-div"></div>
+      <div class="splash-stat-item"><span class="splash-stat-n">GPS</span><span class="splash-stat-l">트래킹</span></div>
+      <div class="splash-stat-div"></div>
+      <div class="splash-stat-item"><span class="splash-stat-n">FREE</span><span class="splash-stat-l">무료</span></div>
+    </div>
+    <div class="splash-form">
+      <div class="splash-form-label">${t('nickLabel')}</div>
+      <div class="splash-input-wrap">
+        <input id="nickIn" maxlength="12" placeholder="${t('nickPH2')}" class="splash-input" autocomplete="off" spellcheck="false">
+        <div id="nickStatus" class="splash-nick-status"></div>
+      </div>
+      <div id="nickMsg" class="splash-nick-msg"></div>
+      <button id="startBtn" class="splash-start-btn" disabled>${t('startBtn2')}</button>
+    </div>
+    <div class="splash-footer">달리는 부산을 느껴보세요 🌊</div>
+  </div>
+</div>`}
 function bLogin(){
   const lb=$('langBtn');if(lb)lb.onclick=()=>{S.lang=S.lang==='ko'?'en':'ko';render()};
-  const ni=$('nickIn'),sb=$('startBtn');
-  const go=()=>{const v=ni?.value.trim();if(v){S.nickname=v;sl('nick',v);render()}};
-  if(sb)sb.onclick=go;
-  if(ni)ni.onkeydown=e=>{if(e.key==='Enter')go()};
+  const ni=$('nickIn'),startBtn=$('startBtn'),msg=$('nickMsg'),status=$('nickStatus');
+  let checkTimer=null;
+  function setStatus(type,text){
+    if(msg)msg.textContent=text||'';
+    if(status){
+      status.className='splash-nick-status';
+      if(type==='ok')status.innerHTML='✓';
+      else if(type==='err')status.innerHTML='✗';
+      else if(type==='checking')status.innerHTML='…';
+      else status.innerHTML='';
+      if(type)status.classList.add('sns-'+type);
+    }
+    if(startBtn)startBtn.disabled=type!=='ok';
+  }
+  async function checkNick(v){
+    if(!v||v.length<2){setStatus('','');return}
+    // Supabase로 실시간 중복 확인
+    const res=await api('checkNickname',{nickname:v});
+    if(res&&res.exists){setStatus('err',t('dupErr'));}
+    else{setStatus('ok','');}
+  }
+  if(ni){
+    ni.oninput=()=>{
+      clearTimeout(checkTimer);
+      const v=ni.value.trim();
+      if(!v||v.length<2){setStatus('','');return}
+      setStatus('checking',t('dupChecking'));
+      checkTimer=setTimeout(()=>checkNick(v),500);
+    };
+    ni.onkeydown=e=>{if(e.key==='Enter'&&startBtn&&!startBtn.disabled)startBtn.click()};
+  }
+  const go=async()=>{
+    const v=ni?.value.trim();
+    if(!v||v.length<2)return;
+    if(startBtn)startBtn.disabled=true;
+    // Supabase 프로필 생성 (중복이면 에러 반환)
+    const res=await api('createProfile',{nickname:v,lang:S.lang});
+    if(res&&res.error==='duplicate'){
+      setStatus('err',t('dupErr'));
+      if(startBtn)startBtn.disabled=false;
+      return;
+    }
+    // 성공: userId 저장
+    const profile=res?.profile;
+    if(profile){S.userId=profile.id;sl('userId',profile.id);}
+    S.nickname=v;sl('nick',v);
+    // 서버에서 전체 데이터 동기화
+    await syncFromServer();
+    render();
+  };
+  if(startBtn)startBtn.onclick=go;
 }
 
 // --- 공통 코스 카드 (공식/추천 공용) ---
@@ -577,21 +791,38 @@ function bind(){
   // 뒤로/닫기
   document.querySelectorAll('[data-action="back"],[data-action="closeModal"]').forEach(el=>el.onclick=()=>{S.modal=null;S.selectedCourse=null;render()});
   // 좋아요
-  document.querySelectorAll('[data-action="like"]').forEach(el=>el.onclick=()=>{
-    if(!S.selectedCourse)return;const id=S.selectedCourse.id,k=id+':'+S.nickname;
-    if(S.selectedType==='official'){if(S.likes[k])delete S.likes[k];else S.likes[k]=true;sl('likes',S.likes)}
-    else{if(S.recLikes[k])delete S.recLikes[k];else S.recLikes[k]=true;sl('rlikes',S.recLikes)}
-    render();
+  document.querySelectorAll('[data-action="like"]').forEach(el=>el.onclick=async()=>{
+    if(!S.selectedCourse||!S.userId)return;
+    const id=S.selectedCourse.id,k=id+':'+S.userId;
+    if(S.selectedType==='official'){
+      if(S.likes[k])delete S.likes[k];else S.likes[k]=true;
+      sl('likes',S.likes);render();
+      await api('toggleLike',{course_id:id,user_id:S.userId});
+    } else {
+      if(S.recLikes[k])delete S.recLikes[k];else S.recLikes[k]=true;
+      sl('rlikes',S.recLikes);render();
+      await api('toggleRecLike',{rec_course_id:id,user_id:S.userId});
+    }
   });
   // 별점
-  document.querySelectorAll('[data-rate]').forEach(el=>el.onclick=()=>{if(!S.selectedCourse)return;S.ratings[S.selectedCourse.id+':'+S.nickname]=+el.dataset.rate;sl('ratings',S.ratings);render()});
+  document.querySelectorAll('[data-rate]').forEach(el=>el.onclick=async()=>{
+    if(!S.selectedCourse||!S.userId)return;
+    const score=+el.dataset.rate;
+    S.ratings[S.selectedCourse.id+':'+S.userId]=score;sl('ratings',S.ratings);render();
+    await api('upsertRating',{course_id:S.selectedCourse.id,user_id:S.userId,score});
+  });
   // 댓글
-  document.querySelectorAll('[data-action="comment"]').forEach(el=>el.onclick=()=>{
+  document.querySelectorAll('[data-action="comment"]').forEach(el=>el.onclick=async()=>{
     const inp=$('cmtIn');if(!inp||!inp.value.trim()||!S.selectedCourse)return;
-    const id=S.selectedCourse.id,cm={id:uid(),user:S.nickname,text:inp.value.trim(),ts:Date.now()};
-    if(S.selectedType==='official'){if(!S.comments[id])S.comments[id]=[];S.comments[id].push(cm);sl('comments',S.comments)}
-    else{if(!S.recComments[id])S.recComments[id]=[];S.recComments[id].push(cm);sl('rcomments',S.recComments)}
-    render();
+    const id=S.selectedCourse.id,body=inp.value.trim();
+    const cm={id:uid(),user:S.nickname,text:body,ts:Date.now()};
+    if(S.selectedType==='official'){
+      if(!S.comments[id])S.comments[id]=[];S.comments[id].push(cm);sl('comments',S.comments);render();
+      if(S.userId)await api('addComment',{course_id:id,user_id:S.userId,nickname:S.nickname,body});
+    } else {
+      if(!S.recComments[id])S.recComments[id]=[];S.recComments[id].push(cm);sl('rcomments',S.recComments);render();
+      if(S.userId)await api('addRecComment',{rec_course_id:id,user_id:S.userId,nickname:S.nickname,body});
+    }
   });
   document.querySelectorAll('[data-action="showAll"]').forEach(el=>el.onclick=()=>{S.showAllCmt=true;render()});
   // 추천코스 등록
@@ -610,25 +841,32 @@ function bind(){
   // 그룹
   document.querySelectorAll('[data-action="openCG"]').forEach(el=>el.onclick=()=>{S.modal='createGroup';render()});
   document.querySelectorAll('[data-action="submitGr"]').forEach(el=>el.onclick=submitGroup);
-  document.querySelectorAll('[data-ga]').forEach(el=>el.onclick=()=>{
+  document.querySelectorAll('[data-ga]').forEach(el=>el.onclick=async()=>{
     const[act,gid]=el.dataset.ga.split(':');const g=S.groupRuns.find(x=>x.id===gid);if(!g)return;if(!g.members)g.members=[];
-    if(act==='join'){if(!g.members.find(m=>m.nickname===S.nickname))g.members.push({nickname:S.nickname})}
-    else g.members=g.members.filter(m=>m.nickname!==S.nickname);
-    sl('groups',S.groupRuns);render();
+    if(act==='join'){
+      if(!g.members.find(m=>m.nickname===S.nickname)){g.members.push({nickname:S.nickname,user_id:S.userId})}
+      sl('groups',S.groupRuns);render();
+      if(S.userId)await api('joinGroupRun',{group_run_id:gid,user_id:S.userId,nickname:S.nickname});
+    } else {
+      g.members=g.members.filter(m=>m.nickname!==S.nickname);
+      sl('groups',S.groupRuns);render();
+      if(S.userId)await api('leaveGroupRun',{group_run_id:gid,user_id:S.userId});
+    }
   });
 }
 
-function submitRecCourse(){
+async function submitRecCourse(){
   const name=$('rf_name')?.value.trim(),desc=$('rf_desc')?.value.trim();
   const dist=parseFloat($('rf_dist')?.value)||0,elev=parseInt($('rf_elev')?.value)||0;
   const diff=$('rf_diff')?.value||'easy',surf=$('rf_surf')?.value.trim()||'';
   const emoji=$('rf_emoji')?.value||'📍',color=$('rf_color')?.value||'#059669';
   if(!name||!desc){alert(S.lang==='ko'?'이름과 설명을 입력하세요':'Enter name and description');return}
   if(!dist){alert(S.lang==='ko'?'거리를 입력하세요':'Enter distance');return}
+  const newId='r_'+uid();
   const c={
-    id:'r_'+uid(),name:name,name_ko:name,name_en:name,
+    id:newId,name,name_ko:name,name_en:name,
     area:S.lang==='ko'?'추천코스':'User Pick',area_ko:'추천코스',area_en:'User Pick',
-    desc:desc,description_ko:desc,description_en:desc,
+    desc,description_ko:desc,description_en:desc,
     distance:dist,elevation:elev,difficulty:diff,
     surface:surf,surface_ko:surf,surface_en:surf,
     tags:recSelectedTags.length?recSelectedTags:['scenic'],
@@ -637,17 +875,42 @@ function submitRecCourse(){
     route_coords:[{lat:S.recFormLat,lng:S.recFormLng}],
     author:S.nickname,ts:Date.now()
   };
-  S.recCourses.push(c);sl('recs',S.recCourses);
+  // 낙관적 업데이트 (로컬 먼저)
+  S.recCourses.unshift(c);sl('recs',S.recCourses);
   S.modal=null;S.tab='rec';render();
+  // Supabase에 저장
+  if(S.userId){
+    await api('createRecCourse',{
+      id:newId,name,description:desc,
+      area:S.lang==='ko'?'추천코스':'User Pick',
+      distance:dist,difficulty:diff,elevation:elev,surface:surf,
+      tags:c.tags,no_signal:c.no_signal,emoji,color,
+      lat:S.recFormLat,lng:S.recFormLng,
+      route_coords:[{lat:S.recFormLat,lng:S.recFormLng}],
+      author_id:S.userId,author_nickname:S.nickname
+    });
+  }
 }
 
-function submitGroup(){
+async function submitGroup(){
   const cid=$('grC')?.value,title=$('grT')?.value,date=$('grD')?.value;
   const max=+($('grM')?.value||10),pace=$('grP')?.value,desc=$('grDe')?.value;
   if(!cid||!date){alert(S.lang==='ko'?'코스와 날짜를 입력하세요':'Select course and date');return}
   const c=[...S.courses,...S.recCourses].find(x=>x.id===cid);
-  S.groupRuns.push({id:uid(),course_id:cid,title:title||cn(c),description:desc,run_date:date,max_members:max,pace,host_nickname:S.nickname,members:[{nickname:S.nickname}]});
-  sl('groups',S.groupRuns);S.modal=null;render();
+  const newId=uid();
+  const gr={id:newId,course_id:cid,title:title||cn(c),description:desc,run_date:date,max_members:max,pace,host_nickname:S.nickname,members:[{nickname:S.nickname,user_id:S.userId}],host_id:S.userId};
+  S.groupRuns.unshift(gr);sl('groups',S.groupRuns);S.modal=null;render();
+  // Supabase
+  if(S.userId){
+    const created=await api('createGroupRun',{course_id:cid,host_id:S.userId,host_nickname:S.nickname,title:title||cn(c),description:desc,run_date:date,max_members:max,pace});
+    if(created&&created[0]?.id){
+      // 호스트를 첫 멤버로 등록
+      await api('joinGroupRun',{group_run_id:created[0].id,user_id:S.userId,nickname:S.nickname});
+      // 로컬 id를 서버 id로 교체
+      const idx=S.groupRuns.findIndex(x=>x.id===newId);
+      if(idx>=0){S.groupRuns[idx].id=created[0].id;sl('groups',S.groupRuns);}
+    }
+  }
 }
 
 // === GPS ===
@@ -667,11 +930,16 @@ function startGps(){
   S.gpsTimer=setInterval(()=>{if(S.gpsState==='running'){S.gpsElapsed++;render()}},1000);
   render();
 }
-function stopGps(){
+async function stopGps(){
   if(S.gpsWatch)navigator.geolocation.clearWatch(S.gpsWatch);
   if(S.gpsTimer)clearInterval(S.gpsTimer);
-  S.myRecords.unshift({course_id:S.selectedCourse?.id||'',distance:+(S.gpsDist/1000).toFixed(3),duration:S.gpsElapsed,avg_pace:fmtPace(S.gpsDist/1000,S.gpsElapsed),route:S.gpsCoords,ts:Date.now()});
-  sl('records',S.myRecords);S.gpsState='idle';S.gpsWatch=null;S.gpsTimer=null;S.tab='my';render();
+  const rec={course_id:S.selectedCourse?.id||'',distance:+(S.gpsDist/1000).toFixed(3),duration:S.gpsElapsed,avg_pace:fmtPace(S.gpsDist/1000,S.gpsElapsed),route:S.gpsCoords,ts:Date.now()};
+  S.myRecords.unshift(rec);sl('records',S.myRecords);
+  S.gpsState='idle';S.gpsWatch=null;S.gpsTimer=null;S.tab='my';render();
+  // Supabase에 저장
+  if(S.userId){
+    await api('saveRunRecord',{user_id:S.userId,course_id:rec.course_id||null,distance:rec.distance,duration:rec.duration,avg_pace:rec.avg_pace,route:S.gpsCoords});
+  }
 }
 
 // === 카카오맵 ===
@@ -764,13 +1032,20 @@ render=function(){
 };
 
 // === 초기화 ===
-function init(){
-  S.nickname=gl('nick','');S.courses=FC;
+async function init(){
+  // 로컬스토리지에서 빠른 복원
+  S.nickname=gl('nick','');
+  S.userId=gl('userId',null);
+  S.courses=FC;
   S.likes=gl('likes',{});S.ratings=gl('ratings',{});S.comments=gl('comments',{});
   S.recCourses=gl('recs',[]);S.recLikes=gl('rlikes',{});S.recComments=gl('rcomments',{});
   S.groupRuns=gl('groups',[]);S.myRecords=gl('records',[]);
-  render();
-  api('getCourses').then(d=>{if(d&&Array.isArray(d)&&d.length){S.courses=d;render()}}).catch(()=>{});
+  render(); // 로컬 데이터로 즉시 렌더
+  if(S.nickname){
+    // 서버에서 최신 데이터 동기화 (백그라운드)
+    await syncFromServer();
+    render();
+  }
 }
 init();
 </script>
