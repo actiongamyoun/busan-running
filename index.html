@@ -40,61 +40,52 @@ button{font-family:inherit;cursor:pointer;border:none;outline:none}
 .inp:focus{border-color:var(--g1)}
 .lbl{font-size:12px;font-weight:600;color:var(--sub);display:block;margin-bottom:2px}
 
-/* ===== 새 코스 카드 디자인 ===== */
+/* ===== 코스 카드 v2 – 일러스트 + SVG 경로 ===== */
 @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
 .course-card{
-  position:relative;border-radius:20px;overflow:hidden;margin-bottom:14px;cursor:pointer;
-  background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.07);
+  border-radius:20px;overflow:hidden;margin-bottom:16px;cursor:pointer;
+  background:#fff;box-shadow:0 4px 20px rgba(0,0,0,.08);
   animation:cardIn .4s cubic-bezier(.22,1,.36,1) both;
-  transition:transform .2s cubic-bezier(.22,1,.36,1),box-shadow .2s;
+  transition:transform .2s,box-shadow .2s;
   -webkit-tap-highlight-color:transparent;
 }
-.course-card:active{transform:scale(.975);box-shadow:0 1px 6px rgba(0,0,0,.1)}
-.course-card-hero{position:relative;height:110px;overflow:hidden;flex-shrink:0}
-.course-card-hero-bg{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:72px;filter:blur(0px);transform:scale(1.1);
-  transition:transform .3s;
-}
-.course-card-hero-overlay{position:absolute;inset:0;background:linear-gradient(160deg,transparent 30%,rgba(0,0,0,.55))}
-.course-card-hero-badges{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap}
-.course-card-hero-stats{position:absolute;bottom:10px;right:10px;display:flex;gap:8px;align-items:center}
-.hero-stat{
-  background:rgba(255,255,255,.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:3px 8px;
-  font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;gap:3px;
-}
-.nsig-pill{
-  background:rgba(255,255,255,.95);border-radius:20px;padding:3px 9px;
-  font-size:10px;font-weight:800;color:#059669;display:flex;align-items:center;gap:3px;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-}
-.diff-pill{
-  border-radius:20px;padding:3px 9px;font-size:10px;font-weight:800;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-}
-.course-card-body{padding:12px 14px 10px}
-.course-card-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.course-card-name{font-size:15px;font-weight:800;color:#111827;letter-spacing:-.3px;line-height:1.3}
-.course-card-area{font-size:11px;color:var(--sub);font-weight:600;margin-top:1px}
-.course-card-emoji-icon{
-  width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex-shrink:0;
-}
-.course-card-desc{font-size:12px;color:#6b7280;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.course-card-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
-.course-card-tag{padding:2px 7px;border-radius:6px;font-size:10px;font-weight:600;color:var(--sub);background:#f3f4f6}
-.course-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6}
-.course-card-reactions{display:flex;align-items:center;gap:10px}
-.reaction-item{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--sub);font-weight:600}
-.course-card-minimap{height:90px;border-radius:12px;background:linear-gradient(135deg,#e5e7eb,#f3f4f6);margin-top:10px;overflow:hidden;position:relative}
-.map-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:#9ca3af;font-weight:600}
-.course-card-dist-badge{
-  font-size:13px;font-weight:900;color:#111827;
-  display:flex;align-items:baseline;gap:2px;
-}
-.course-card-dist-badge span{font-size:10px;font-weight:600;color:var(--sub)}
+.course-card:active{transform:scale(.976);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+
+/* 일러스트 히어로 */
+.cc-hero{position:relative;height:130px;overflow:hidden}
+.cc-hero-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.cc-hero-illust{position:absolute;inset:0;line-height:0}
+.cc-hero-illust svg{width:100%;height:100%;display:block}
+.cc-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.08) 0%,rgba(0,0,0,.0) 40%,rgba(0,0,0,.35) 100%)}
+.cc-hero-top{position:absolute;top:10px;left:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.cc-hero-bottom{position:absolute;bottom:10px;right:10px;display:flex;gap:6px}
+
+.cc-badge{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.cc-badge-nosig{background:rgba(255,255,255,.92);color:#059669;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.cc-badge-user{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.cc-stat-pill{background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;border:1px solid rgba(255,255,255,.15)}
+
+/* 본문 */
+.cc-body{padding:13px 14px 10px}
+.cc-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cc-name{font-size:16px;font-weight:800;color:#111827;letter-spacing:-.4px;line-height:1.25}
+.cc-surface{font-size:11px;color:var(--sub);font-weight:600;margin-top:2px}
+.cc-dist{font-size:20px;font-weight:900;color:#111827;display:flex;align-items:baseline;gap:2px;flex-shrink:0}
+.cc-dist span{font-size:11px;font-weight:600;color:var(--sub)}
+.cc-desc{font-size:12px;color:#6b7280;margin-top:7px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cc-tags{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.cc-tag{padding:3px 8px;border-radius:8px;font-size:10px;font-weight:700}
+
+/* SVG 경로 지도 */
+.cc-route-map{height:100px;border-radius:12px;overflow:hidden;margin-top:10px;background:#f0fdf4;border:1px solid #d1fae5}
+
+/* 푸터 */
+.cc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6}
+.cc-reactions{display:flex;align-items:center;gap:10px}
+.cc-react{font-size:12px;font-weight:600;color:var(--sub);display:flex;align-items:center;gap:3px}
+.cc-react-sub{color:#d1d5db;font-weight:400}
+.cc-view-btn{font-size:11px;font-weight:800;padding:4px 13px;border-radius:20px;cursor:pointer}
 
 /* ===== 대문(스플래시) 디자인 ===== */
 @keyframes waveMove{0%{transform:translateX(0) scaleY(1)}50%{transform:translateX(-8%)scaleY(1.04)}100%{transform:translateX(0) scaleY(1)}}
@@ -340,6 +331,62 @@ async function syncFromServer(){
   }
 }
 
+
+
+// ── 코스별 Unsplash 사진 ─────────────────────────────────────────────
+const COURSE_PHOTOS = {
+  c01: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=400&h=140&fit=crop&auto=format&q=80',
+  c02: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=400&h=140&fit=crop&auto=format&q=80',
+  c03: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&h=140&fit=crop&auto=format&q=80',
+  c04: 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=140&fit=crop&auto=format&q=80',
+  c05: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=140&fit=crop&auto=format&q=80',
+  c06: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=400&h=140&fit=crop&auto=format&q=80',
+  c07: 'https://images.unsplash.com/photo-1468372954638-ed3d01ae9b08?w=400&h=140&fit=crop&auto=format&q=80',
+  c08: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=140&fit=crop&auto=format&q=80',
+  c09: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=140&fit=crop&auto=format&q=80',
+  c10: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=140&fit=crop&auto=format&q=80',
+  c11: 'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=400&h=140&fit=crop&auto=format&q=80',
+  c12: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=140&fit=crop&auto=format&q=80',
+};
+function getCoursePhoto(courseId) {
+  return COURSE_PHOTOS[courseId] || 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=400&h=140&fit=crop&auto=format&q=80';
+}
+
+// ── route_coords → SVG path 변환 ──────────────────────────────────────
+function routeToSVG(coords, color) {
+  if (!coords || coords.length < 2) return '';
+  // 좌표 범위 계산
+  const lats = coords.map(p => p.lat);
+  const lngs = coords.map(p => p.lng);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+  const W = 340, H = 80, PAD = 20;
+  const latRange = maxLat - minLat || 0.001;
+  const lngRange = maxLng - minLng || 0.001;
+  const scale = Math.min(W / lngRange, H / latRange);
+  function toSVG(p) {
+    return {
+      x: PAD + (p.lng - minLng) * scale,
+      y: PAD + (maxLat - p.lat) * scale
+    };
+  }
+  const pts = coords.map(toSVG);
+  const d = pts.map((p, i) => (i === 0 ? `M${p.x.toFixed(1)},${p.y.toFixed(1)}` : `L${p.x.toFixed(1)},${p.y.toFixed(1)}`)).join(' ');
+  const start = pts[0], end = pts[pts.length - 1];
+  const totalW = (maxLng - minLng) * scale + PAD * 2;
+  const totalH = (maxLat - minLat) * scale + PAD * 2;
+  return `<svg viewBox="0 0 ${Math.max(totalW, 80).toFixed(0)} ${Math.max(totalH, 60).toFixed(0)}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+    <rect width="100%" height="100%" fill="#f0fdf4" rx="4"/>
+    <path d="${d}" stroke="${color}" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+    <path d="${d}" stroke="${color}" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".15"/>
+    <circle cx="${start.x.toFixed(1)}" cy="${start.y.toFixed(1)}" r="7" fill="${color}" stroke="#fff" stroke-width="2.5"/>
+    <circle cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" r="7" fill="#fff" stroke="${color}" stroke-width="2.5"/>
+    <circle cx="${end.x.toFixed(1)}" cy="${end.y.toFixed(1)}" r="4" fill="${color}"/>
+    <text x="${start.x.toFixed(1)}" y="${(parseFloat(start.y) - 10).toFixed(1)}" text-anchor="middle" font-size="9" fill="${color}" font-weight="700" font-family="sans-serif">출발</text>
+    <text x="${end.x.toFixed(1)}" y="${(parseFloat(end.y) - 10).toFixed(1)}" text-anchor="middle" font-size="9" fill="${color}" font-weight="700" font-family="sans-serif">도착</text>
+  </svg>`;
+}
+
 // === 코스 데이터 ===
 const FC=[
 {id:'c01',name_ko:'해운대 문탠로드',name_en:'Moontan Road',area_ko:'해운대',area_en:'Haeundae',distance:3.2,difficulty:'easy',tags:['no_signal','scenic','beach'],no_signal:true,description_ko:'달맞이고개~송정 해안 산책로. 차도 완전 분리, 신호 제로!',description_en:'Coastal trail from Dalmaji to Songjeong. Zero traffic lights!',elevation:45,surface_ko:'포장도로',surface_en:'Paved',emoji:'🌊',color:'#0ea5e9',lat:35.1633,lng:129.1856,route_coords:[{lat:35.1633,lng:129.1856},{lat:35.159,lng:129.192},{lat:35.157,lng:129.198},{lat:35.1588,lng:129.204}]},
@@ -481,48 +528,50 @@ function rCourseCard(c,type,i){
   const av=isOff?gAv(c.id):0;
   const cm=isOff?gCm(c.id):rCm(c.id);
   const color=c.color||'#059669';
-  const emoji=c.emoji||'📍';
   const diffLabel=cdf(c);
+  const diffColor=cdc(c);
   const visibleTags=(c.tags||[]).filter(tg=>tg!=='no_signal').slice(0,3);
   const delay=(i||0)*.06;
-  const heroBg=`linear-gradient(135deg,${color}dd,${color}88)`;
-  const diffBg={easy:'rgba(16,185,129,.3)',medium:'rgba(245,158,11,.3)',hard:'rgba(239,68,68,.3)'}[c.difficulty]||'rgba(0,0,0,.15)';
-  const diffFg={easy:'#d1fae5',medium:'#fef3c7',hard:'#fee2e2'}[c.difficulty]||'#fff';
+  const routeSvg=routeToSVG(c.route_coords,color);
   return`
   <div data-open="${type}:${c.id}" class="course-card" style="animation-delay:${delay}s">
-    <div class="course-card-hero" style="background:${heroBg}">
-      <div class="course-card-hero-bg">${emoji}</div>
-      <div class="course-card-hero-overlay"></div>
-      <div class="course-card-hero-badges">
-        ${c.no_signal?`<div class="nsig-pill">🚫 ${t('noSig')}</div>`:''}
-        <div class="diff-pill" style="background:${diffBg};color:${diffFg};border:1px solid rgba(255,255,255,.2)">${diffLabel}</div>
-        ${!isOff?`<div class="diff-pill" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.2)">👤 ${c.author||''}</div>`:''}
+    <!-- 사진 히어로 -->
+    <div class="cc-hero">
+      <img class="cc-hero-img" src="${getCoursePhoto(c.id)}" alt="${cn(c)}" loading="lazy" onerror="this.style.display='none';this.parentNode.style.background='linear-gradient(135deg,'+color+'cc,'+color+'66)'">
+      <div class="cc-hero-overlay"></div>
+      <div class="cc-hero-top">
+        ${c.no_signal?`<span class="cc-badge cc-badge-nosig">🚫 ${t('noSig')}</span>`:''}
+        <span class="cc-badge" style="background:${diffColor}22;color:${diffColor};border:1px solid ${diffColor}44">${diffLabel}</span>
+        ${!isOff?`<span class="cc-badge cc-badge-user">👤 ${c.author||''}</span>`:''}
       </div>
-      <div class="course-card-hero-stats">
-        <div class="hero-stat">📍 ${ca(c)}</div>
-        <div class="hero-stat">▲${c.elevation||0}m</div>
+      <div class="cc-hero-bottom">
+        <span class="cc-stat-pill">📍 ${ca(c)}</span>
+        <span class="cc-stat-pill">▲${c.elevation||0}m</span>
       </div>
     </div>
-    <div class="course-card-body">
-      <div class="course-card-title-row">
+    <!-- 본문 -->
+    <div class="cc-body">
+      <div class="cc-title-row">
         <div style="flex:1;min-width:0">
-          <div class="course-card-name">${cn(c)}</div>
-          <div class="course-card-area">${cs(c)}</div>
+          <div class="cc-name">${cn(c)}</div>
+          <div class="cc-surface">${cs(c)}</div>
         </div>
-        <div class="course-card-dist-badge">${c.distance}<span>km</span></div>
+        <div class="cc-dist">${c.distance}<span>km</span></div>
       </div>
-      <div class="course-card-desc">${cd(c)}</div>
-      ${visibleTags.length?`<div class="course-card-tags">${visibleTags.map(tg=>`<span class="course-card-tag">#${tl(tg)}</span>`).join('')}</div>`:''}
-      <div class="course-card-minimap" id="minimap_${type}_${c.id}">
-        <div class="map-placeholder">🗺️ ${S.lang==='ko'?'지도 로딩 중...':'Loading map...'}</div>
+      <div class="cc-desc">${cd(c)}</div>
+      ${visibleTags.length?`<div class="cc-tags">${visibleTags.map(tg=>`<span class="cc-tag" style="color:${color};background:${color}12;border:1px solid ${color}22">#${tl(tg)}</span>`).join('')}</div>`:''}
+      <!-- SVG 경로 지도 -->
+      <div class="cc-route-map">
+        ${routeSvg||`<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#9ca3af;font-size:12px">경로 정보 없음</div>`}
       </div>
-      <div class="course-card-footer">
-        <div class="course-card-reactions">
-          ${isOff&&av?`<div class="reaction-item"><span style="color:#f59e0b">⭐</span>${av.toFixed(1)} <span style="color:#d1d5db;font-weight:400">(${gRc(c.id)})</span></div>`:''}
-          <div class="reaction-item"><span>❤️</span>${lk}</div>
-          <div class="reaction-item"><span>💬</span>${cm.length}</div>
+      <!-- 푸터 -->
+      <div class="cc-footer">
+        <div class="cc-reactions">
+          ${isOff&&av?`<span class="cc-react"><span style="color:#f59e0b">⭐</span> ${av.toFixed(1)} <span class="cc-react-sub">(${gRc(c.id)})</span></span>`:''}
+          <span class="cc-react">❤️ ${lk}</span>
+          <span class="cc-react">💬 ${cm.length}</span>
         </div>
-        <div style="font-size:11px;font-weight:700;color:${color};background:${color}15;padding:4px 12px;border-radius:20px">${S.lang==='ko'?'자세히 →':'View →'}</div>
+        <span class="cc-view-btn" style="color:${color};background:${color}12;border:1px solid ${color}30">${S.lang==='ko'?'자세히 →':'View →'}</span>
       </div>
     </div>
   </div>`}
